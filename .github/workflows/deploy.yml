@@ -40,9 +40,15 @@ jobs:
 
       - name: Set up ssh-agent
         run: |
+          # Start the ssh-agent
+          eval $(ssh-agent -s)
+          
+          # Create SSH directory and add the private key
           mkdir -p ~/.ssh
           echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          
+          # Add private key to ssh-agent
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
 
       - name: SSH into Oracle VM and update bot
