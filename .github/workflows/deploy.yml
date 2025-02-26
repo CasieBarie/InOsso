@@ -38,6 +38,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Set up ssh-agent
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
+
+      - name: Set up GitHub Container Registry Authentication
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" > ghcr_token.txt
+          scp ghcr_token.txt ubuntu@${{ secrets.ORACLE_HOST }}:/home/ubuntu/ghcr_token.txt
+
       - name: SSH into Oracle VM and update bot
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -46,5 +58,9 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd /home/ubuntu
-            ./update-bot.sh
+            # Move the token file to the correct place
+            mv /home/ubuntu/ghcr_token.txt /home/ubuntu/.ghcr_token
+
+            # Run the update-bot.sh script which will use the token for Docker login
+            chmod +x /home/ubuntu/update-bot.sh
+            /home/ubuntu/update-bot.sh
