@@ -28,8 +28,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/inosso-bot:latest .
-          docker push ghcr.io/${{ github.actor }}/inosso-bot:latest
+          docker build -t ghcr.io/casiebarie/inosso-bot:latest .
+          docker push ghcr.io/casiebarie/inosso-bot:latest
 
   deploy:
     runs-on: ubuntu-latest
