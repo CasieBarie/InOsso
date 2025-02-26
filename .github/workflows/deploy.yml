@@ -38,31 +38,38 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up ssh-agent
+      - name: Set up SSH Agent
         run: |
+          # Start the SSH agent
           eval $(ssh-agent -s)
+          
+          # Set up the SSH key
           mkdir -p ~/.ssh
           echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          # Add the SSH key to the agent
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
-          # Debugging: Check if the key is added to ssh-agent
+          
+          # Debugging: Verify the SSH key is added to the agent
           ssh-add -l
 
       - name: Add Oracle VM to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.ORACLE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${ORACLE_HOST} >> ~/.ssh/known_hosts
+          
+          # Debugging: Verify known hosts
+          cat ~/.ssh/known_hosts
 
-      - name: Debug SSH Authentication
+      - name: Debug SSH Authentication (Dry Run)
         run: |
-          # Try SSH login to check if the key is working
+          # Test SSH connection to Oracle VM without doing anything
           ssh -v ubuntu@${{ secrets.ORACLE_HOST }} exit
 
       - name: Set up GitHub Container Registry Authentication
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" > ghcr_token.txt
-          # Debugging: Check that the key is correctly available
-          ls -l ~/.ssh
+          # Transfer the token to the Oracle VM
           scp -i ~/.ssh/id_rsa ghcr_token.txt ubuntu@${{ secrets.ORACLE_HOST }}:/home/ubuntu/ghcr_token.txt
 
       - name: SSH into Oracle VM and update bot
@@ -76,6 +83,6 @@ jobs:
             # Move the token file to the correct place
             mv /home/ubuntu/ghcr_token.txt /home/ubuntu/.ghcr_token
 
-            # Run the update-bot.sh script which will use the token for Docker login
+            # Run the update-bot.sh script to pull the latest Docker image and restart the bot
             chmod +x /home/ubuntu/update-bot.sh
             /home/ubuntu/update-bot.sh
