@@ -46,6 +46,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
 
+      - name: Add Oracle VM to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.ORACLE_HOST }} >> ~/.ssh/known_hosts
+
       - name: Set up GitHub Container Registry Authentication
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" > ghcr_token.txt
