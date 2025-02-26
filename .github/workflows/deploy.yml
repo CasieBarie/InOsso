@@ -40,6 +40,7 @@ jobs:
 
       - name: Set up ssh-agent
         run: |
+          eval $(ssh-agent -s)
           mkdir -p ~/.ssh
           echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
