@@ -54,7 +54,7 @@ jobs:
       - name: Set up GitHub Container Registry Authentication
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" > ghcr_token.txt
-          scp ghcr_token.txt ubuntu@${{ secrets.ORACLE_HOST }}:/home/ubuntu/ghcr_token.txt
+          scp -i ~/.ssh/id_rsa ghcr_token.txt ubuntu@${{ secrets.ORACLE_HOST }}:/home/ubuntu/ghcr_token.txt
 
       - name: SSH into Oracle VM and update bot
         uses: appleboy/ssh-action@v0.1.7
