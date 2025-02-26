@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <conversionRule conversionWord="highlightex" class="dev.casiebarie.inosso.utils.logging.HighlightingCompositeConverterEx"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{dd-MM-yyyy HH:mm:ss.SSS}] %highlightex(%-5level) %boldCyan(|%-25.-25thread|) %boldGreen(|%-25.-25logger |) >> %nopex %highlightex(%msg%n%ex)</pattern>
+        </encoder>
+    </appender>
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
