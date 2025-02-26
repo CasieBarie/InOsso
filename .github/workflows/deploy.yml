@@ -56,7 +56,7 @@ jobs:
       - name: Add Oracle VM to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${ORACLE_HOST} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.ORACLE_HOST }}" >> ~/.ssh/known_hosts
           
           # Debugging: Verify known hosts
           cat ~/.ssh/known_hosts
