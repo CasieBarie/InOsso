@@ -156,7 +156,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <outputFIlePath>${project.build.directory}/inosso-bot.jar</outputFIlePath>
+                <outputFilePath>${project.build.directory}/inosso-bot.jar</outputFilePath>
             </properties>
         </profile>
         <profile>
