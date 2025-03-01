@@ -84,8 +84,8 @@ public class Controller {
 		isPaused = manager.player.isPaused();
 		if(nowPlayingTrack != null && nowPlayingTrack.getIdentifier().equals("silence.opus")) {nowPlayingTrack = null;}
 
-		String nowPlaying = (nowPlayingTrack == null) ? "\n`Niets`" : String.format("\n> **%s**\n> %s\n> _(%s / %s)_\n> %s\n", Utils.truncate(nowPlayingTrack.getInfo().title, 180), Utils.truncate(nowPlayingTrack.getInfo().author, 180), Utils.formatDuration(nowPlayingTrack.getPosition(), nowPlayingTrack.getDuration()), Utils.formatDuration(nowPlayingTrack.getDuration()), Utils.getAsMention(guild.getMemberById(nowPlayingTrack.getUserData().toString())));
-		String overridenPlaying = (overridenTrack == null || nowPlayingTrack == null) ? "" : String.format("\n> **%s**\n> %s\n> _(%s)_\n> %s", Utils.truncate(overridenTrack.getInfo().title, 180), Utils.truncate(overridenTrack.getInfo().author, 180), Utils.formatDuration(overridenTrack.getDuration()), Utils.getAsMention(guild.getMemberById(overridenTrack.getUserData().toString())));
+		String nowPlaying = (nowPlayingTrack == null) ? "\n`Niets`" : String.format("\n> **%s**\n> %s\n> *(%s / %s)*\n> %s\n", Utils.truncate(nowPlayingTrack.getInfo().title, 180), Utils.truncate(nowPlayingTrack.getInfo().author, 180), Utils.formatDuration(nowPlayingTrack.getPosition(), nowPlayingTrack.getDuration()), Utils.formatDuration(nowPlayingTrack.getDuration()), Utils.getAsMention(guild.getMemberById(nowPlayingTrack.getUserData().toString())));
+		String overridenPlaying = (overridenTrack == null || nowPlayingTrack == null) ? "" : String.format("\n> **%s**\n> %s\n> *(%s)*\n> %s", Utils.truncate(overridenTrack.getInfo().title, 180), Utils.truncate(overridenTrack.getInfo().author, 180), Utils.formatDuration(overridenTrack.getDuration()), Utils.getAsMention(guild.getMemberById(overridenTrack.getUserData().toString())));
 		String paused = isPaused ? "\n_(Gepauzeerd)_" : "";
 
 		return new EmbedBuilder()
@@ -104,7 +104,7 @@ public class Controller {
 		queue.remove(nowPlayingTrack);
 		StringBuilder builder = new StringBuilder();
 		AudioTrack track = queue.peek();
-		builder.append(String.format("\n> **%s**\n> %s\n> _(%s)_\n> %s\n", Utils.truncate(track.getInfo().title, 180), Utils.truncate(track.getInfo().author, 180), Utils.formatDuration(track.getDuration()), Utils.getAsMention(jda().getGuildById(guildId).getMemberById(track.getUserData().toString()))));
+		builder.append(String.format("\n> **%s**\n> %s\n> *(%s)*\n> %s\n", Utils.truncate(track.getInfo().title, 180), Utils.truncate(track.getInfo().author, 180), Utils.formatDuration(track.getDuration()), Utils.getAsMention(jda().getGuildById(guildId).getMemberById(track.getUserData().toString()))));
 		if(queue.size() > 1) {builder.append("\nen ").append(queue.size() - 1).append(" meer...");}
 		return builder.toString();
 	}

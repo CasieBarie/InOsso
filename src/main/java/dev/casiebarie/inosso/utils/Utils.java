@@ -56,9 +56,13 @@ public class Utils {
 	public static @NotNull FileUpload loadAvatar(String avatarUrl) {return loadAvatar(avatarUrl, null);}
 	public static @NotNull FileUpload loadAvatar(String avatarUrl, Integer number) {
 		String numberString = number != null ? number + "" : "";
-		try(InputStream is = new URL(avatarUrl).openStream()) {
-			return FileUpload.fromData(is, String.format("avatar%s.png", numberString));
-		} catch(Exception ex) {
+		try {
+			URL url = new URL(avatarUrl);
+			try(InputStream is = url.openStream()) {
+				byte[] data = is.readAllBytes();
+				return FileUpload.fromData(data, String.format("avatar%s.png", numberString));
+			}
+		} catch (Exception ex) {
 			getLogger().error(ex.getMessage(), ex);
 			return FileUpload.fromData(Utils.class.getClassLoader().getResourceAsStream("images/goat.png"), String.format("avatar%s.png", numberString));
 		}
@@ -74,7 +78,7 @@ public class Utils {
 		length /= 60;
 		long minutes = length % 60;
 		long hours = length / 60;
-		return (hours > 0) ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
+		return escapeMarkdown((hours > 0) ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds));
 	}
 
 	public static @NotNull String truncate(String text, int maxLength) {
@@ -82,7 +86,7 @@ public class Utils {
 		text = text.replace("\r\n", "\n");
 		if(text.codePointCount(0, text.length()) <= maxLength) {return text;}
 		int endIndex = text.offsetByCodePoints(0, maxLength - 1);
-		return text.substring(0, endIndex) + "…";
+		return escapeMarkdown(text.substring(0, endIndex) + "…");
 	}
 
 	public static boolean isAudioUrl(String url) {
@@ -123,5 +127,13 @@ public class Utils {
 	public static long jitter(long around) {
 		long jitter = random.nextInt(51);
 		return around + jitter;
+	}
+
+	public static @NotNull String escapeMarkdown(@NotNull String input) {
+		return input.replace("*", "\\*")
+			.replace("_", "\\_")
+			.replace("~", "\\~")
+			.replace("`", "\\`")
+			.replace(">", "\\>");
 	}
 }

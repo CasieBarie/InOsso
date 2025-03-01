@@ -206,7 +206,7 @@ public class TrackScheduler extends AudioEventAdapter {
 						.setDescription("# Opnieuw afspelen" +
 							"\n> **" + Utils.truncate(audioTrack.getInfo().title, 180) + "**" +
 							"\n> " + Utils.truncate(audioTrack.getInfo().author, 180) +
-							"\n> _(" + Utils.formatDuration(audioTrack.getDuration()) + ")_" +
+							"\n> *(" + Utils.formatDuration(audioTrack.getDuration()) + ")*" +
 							"\n\nwordt opnieuw afgespeeld!"
 						)
 						.setColor(Color.GREEN)

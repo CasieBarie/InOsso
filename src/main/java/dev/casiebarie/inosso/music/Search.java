@@ -118,7 +118,7 @@ public class Search extends ListenerAdapter {
 			.setDescription("# :tada: Toegevoegd!" +
 				"\n> **" + Utils.truncate(track.getInfo().title, 180) + "**" +
 				"\n> " + Utils.truncate(track.getInfo().author, 180) +
-				"\n> _(" + Utils.formatDuration(track.getDuration()) + ")_" +
+				"\n> *(" + Utils.formatDuration(track.getDuration()) + ")*" +
 				"\nis toegevoegd aan de wachtrij!\n\n_Toegevoegd door: " + Utils.getAsMention(searcher) + "_");
 
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
