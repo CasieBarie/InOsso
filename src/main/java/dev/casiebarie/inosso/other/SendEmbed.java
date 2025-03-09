@@ -68,7 +68,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
 		if(!e.getButton().getId().equals("send_embed")) {return;}
-		e.deferReply(true).queue();
+		e.deferReply(true).queue(null, ReplyOperation::error);
 		ReplyOperation o = new ReplyOperation(e);
 
 		Main.pool.execute(() -> {

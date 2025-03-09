@@ -72,7 +72,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
 		String id = e.getButton().getId();
 		if(!id.startsWith("jachtseizoen-")) {return;}
-		e.deferReply(true).queue();
+		e.deferReply(true).queue(null, ReplyOperation::error);
 		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
 
 		Main.pool.execute(() -> {

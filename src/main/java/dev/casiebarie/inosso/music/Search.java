@@ -89,9 +89,10 @@ public class Search extends ListenerAdapter {
 		String selectionId = e.getSelectMenu().getId();
 		if(!selectionId.startsWith("searchmusic_")) {return;}
 		Logger.debug(getLogger(), "StringSelectInteraction with ID {} by {}", () -> new String[] {selectionId, Logger.getUserNameAndId(member.getUser())});
-		ReplyOperation o = new ReplyOperation(e);
+		e.deferReply(true).queue(null, ReplyOperation::error);
 
 		Main.pool.execute(() -> {
+			ReplyOperation o = new ReplyOperation(e);
 			if(!selectionId.split("_")[1].equals(member.getId())) {o.sendNotAllowed("Alleen de zoeker mag hierop reageren!"); return;}
 			String selected = e.getSelectedOptions().get(0).getValue();
 			if(selected.equals("search-cancel")) {e.getMessage().delete().queue(success -> o.sendSuccess("Zoeken gestopt, kan gebeuren joh!"), o::sendFailed); return;}

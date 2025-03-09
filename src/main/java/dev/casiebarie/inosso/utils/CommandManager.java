@@ -56,11 +56,11 @@ public class CommandManager extends ListenerAdapter {
 
 		if(e.getCommandType().equals(Command.Type.SLASH)) {
 			SlashCommandInteraction event = (SlashCommandInteraction) e;
-			e.deferReply(needsPoolMap.get(listener)).queue();
+			e.deferReply(needsPoolMap.get(listener)).queue(null, ReplyOperation::error);
 			Main.pool.execute(() -> listener.onCommand(event));
 		} else {
 			UserContextInteraction event = (UserContextInteraction) e;
-			e.deferReply(needsPoolMap.get(listener)).queue();
+			e.deferReply(needsPoolMap.get(listener)).queue(null, ReplyOperation::error);
 			Main.pool.execute(() -> listener.onCommand(event));
 		}
 	}

@@ -70,7 +70,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
 		String btnId = e.getButton().getId();
 		if(!btnId.startsWith("come_") || e.getUser().isBot()) {return;}
-		e.deferReply(true).queue();
+		e.deferReply(true).queue(null, ReplyOperation::error);
 		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
 
 		Main.pool.execute(() -> {

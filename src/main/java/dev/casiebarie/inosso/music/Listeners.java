@@ -57,7 +57,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		ReplyOperation o = new ReplyOperation(e);
 		GuildMusicManager manager = PlayerManager.getInstance(music).getGuildMusicManager(guild);
 		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
-		e.deferReply(true).queue();
+		e.deferReply(true).queue(null, ReplyOperation::error);
 
 		Main.pool.execute(() -> {
 			if(!Utils.isInVoice(e.getMember(), o)) {return;}

@@ -58,7 +58,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
 		if(!e.getComponentId().startsWith("request_")) {return;}
-		e.deferReply(true).queue();
+		e.deferReply(true).queue(null, ReplyOperation::error);
 		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
 
 		Main.pool.execute(() -> {

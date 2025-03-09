@@ -91,7 +91,7 @@ public class ReplyOperation {
 
 	private void send(MessageEmbed embed, int deleteAfterSeconds) {
 		if(e != null) {
-			if(!e.isAcknowledged()) {e.deferReply(true).queue();}
+			if(!e.isAcknowledged()) {e.deferReply(true).queue(null, ReplyOperation::error);}
 			e.getHook().editOriginalEmbeds(embed).queue(null, ReplyOperation::error);
 			return;
 		}
@@ -114,7 +114,7 @@ public class ReplyOperation {
 
 	public static void error(Throwable error) {
 		if(error instanceof ErrorResponseException err) {
-			if(err.getErrorResponse() == ErrorResponse.UNKNOWN_MESSAGE || err.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {getLogger().debug("Error supressed: {}", error.getMessage()); return;}
+			if(err.getErrorResponse() == ErrorResponse.UNKNOWN_MESSAGE || err.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {getLogger().debug("Error suppressed: {}", error.getMessage()); return;}
 			getLogger().error(error.getMessage(), error);
 		} else {getLogger().error(error.getMessage(), error);}
 	}
