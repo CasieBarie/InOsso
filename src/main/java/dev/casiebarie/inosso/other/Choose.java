@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
+
 public class Choose implements Information {
 	final Random random = new Random();
 	public Choose(ClassLoader classes) {
@@ -55,9 +58,9 @@ public class Choose implements Information {
 			.setTitle("En het is:")
 			.setDescription("# " + Utils.getAsMention(chosen) + "\n### Gefeliciteerd" + (isForced ? "?" : "!"))
 			.setColor(chosen.getColor())
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://avatar.png");
-		textChannel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage("empty.png"), Utils.loadAvatar(chosen.getEffectiveAvatarUrl())).queue();
+		textChannel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(chosen.getEffectiveAvatarUrl())).queue();
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class Choose implements Information {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.WHITE)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :game_die: Kies Help :game_die:\n" +
 				"Het " + cmdMention + " commando is heel eenvoudig. Het kiest random iemand uit " + Channels.VOICE.getAsMention(guild) + ". Zelf moet je daar ook in zitten.\n" +
 				"Als je het niet eens bent met de uitkomst, jammer! **De uitkomst is altijd leidend.**"
@@ -75,7 +78,7 @@ public class Choose implements Information {
 
 		if(random.nextInt(10) == 5) {eb.setFooter("Er is een manier om de uitkomst te beïnvloeden. Hoe dat precies werkt, mag je zelf uitzoeken!");}
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 

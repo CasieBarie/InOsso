@@ -18,6 +18,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Clips extends ListenerAdapter implements Information {
@@ -56,13 +58,13 @@ public class Clips extends ListenerAdapter implements Information {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.BLACK)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :video_camera: Climpies Help :video_camera:\n" +
 				"Het " + Channels.CLIPS.getAsMention(guild) + " kanaal is alleen voor clipjes. Alle berichten die geen video-link of bestand bevatten, worden automatisch verwijderd. Deze controle duurt ongeveer `1` seconde.")
 			.setFooter("Vraag aan " + cas.getEffectiveName() + " voor eventuele versoepelingen.");
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 }

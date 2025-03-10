@@ -27,7 +27,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static dev.casiebarie.inosso.Main.jda;
-import static dev.casiebarie.inosso.enums.Variables.MAX_QUEUE_SIZE;
+import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class TrackScheduler extends AudioEventAdapter {
@@ -211,9 +211,9 @@ public class TrackScheduler extends AudioEventAdapter {
 						)
 						.setColor(Color.GREEN)
 						.setThumbnail("attachment://muziekjes.png")
-						.setImage("attachment://empty.png")
+						.setImage(EMPTY_IMAGE)
 					.build()
-				).setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage("empty.png")).queue(null, o::sendFailed);
+				).setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 				getLogger().debug("Track loaded: {}", track.getInfo().title);
 			}
 

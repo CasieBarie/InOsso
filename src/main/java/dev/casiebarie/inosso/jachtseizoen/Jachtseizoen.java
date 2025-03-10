@@ -99,7 +99,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.BLUE)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :man_running: Jachtzeizoen Help :police_officer:\n" +
 				"Wil je Jachtseizoen spelen? Gebruik dan " + cmdMention + ". " +
 				"Hiermee wordt er een bericht gestuurd in " + Channels.MAIN.getAsMention(guild) + " met de regels van deze ronde, " +
@@ -117,7 +117,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 			);
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 
@@ -160,7 +160,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 			.addField(":police_officer: | Jager", "- " + Utils.getAsMention(hunter), true)
 			.addField(":man_running: | Renners", runners.toString(), true)
 			.addField(":closed_book: | Regels", rules, false)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://jachtseizoen.png")
 		.build();
 	}
@@ -168,7 +168,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 	protected MessageEmbed gameEmbed(int gameStatus, boolean isPaused, long gameTime, long nextLookTime) {
 		return new EmbedBuilder()
 			.setColor(Color.MAGENTA)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription(
 				(isPaused ? ":pause_button: Gepauzeerd :pause_button:" : "# :man_running: Aan het spelen... :police_officer:") +
 				(gameStatus == 1 ? "\n### Renners pak je voorsprong!" : "") +

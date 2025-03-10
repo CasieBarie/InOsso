@@ -35,11 +35,12 @@ import java.util.concurrent.TimeUnit;
 
 import static dev.casiebarie.inosso.Main.jda;
 import static dev.casiebarie.inosso.Main.safeRunnable;
-import static dev.casiebarie.inosso.enums.Variables.REQUEST_COOLDOWN_HOURS;
+import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Request extends ListenerAdapter implements ScheduledTask, Information {
 	final ClassLoader classes;
+	static final String WEBHOOK_ID = "GateKeeper";
 	Map<String, Long> cooldowns = new HashMap<>();
 	Map<String, GuildRequestManager> managers = new HashMap<>();
 	public Request(@NotNull ClassLoader classes) {
@@ -76,7 +77,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :bust_in_silhouette: Gasten Help :bust_in_silhouette:\n" +
 				"Nieuwe leden hebben alleen toegang tot de `Poort🚪` channel. " +
 				"Hier zien ze een bericht met wie er in de call zit en kunnen ze op een knop drukken om te vragen of ze mogen meedoen. " +
@@ -87,7 +88,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				"\nGasten kunnen ook handmatig toegevoegd of verwijderd worden met het `/gast` command.");
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 
@@ -106,11 +107,11 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		cooldowns.put(requester.getId(), time);
 
 		classes.music.playCall(guild, channel);
-		Webhook webhook = WebhookManager.getWebhook(channel, "GateKeeper");
+		Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 		if(webhook == null) {return;}
 		webhook.sendMessageEmbeds(requestingEmbed(requester))
 			.setUsername(guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪")
-			.setFiles(Utils.loadImage("empty.png"), Utils.loadAvatar(requester.getEffectiveAvatarUrl()))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(requester.getEffectiveAvatarUrl()))
 			.setActionRow(
 				Button.success("request_approve-" + requester.getId(), "Ja"),
 				Button.danger("request_deny-" + requester.getId(), "Nee"))
@@ -151,7 +152,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				"\n\nWil je hem toelaten?")
 			.setColor(Color.decode("#e67e22"))
 			.setThumbnail("attachment://avatar.png")
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 		.build();
 	}
 
@@ -160,7 +161,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			.setDescription("# " + (approve ? ":white_check_mark: Toegelaten :white_check_mark:\n" + requester.getAsMention() + " is toegelaten!\n\nHeel veel plezier!" : ":x: Afgewezen :x:\n" + requester.getAsMention() + " is niet toegelaten!\n\nJammer joh..."))
 			.setColor((approve) ? Color.GREEN : Color.RED)
 			.setThumbnail("attachment://avatar.png")
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 		.build();
 	}
 
@@ -177,7 +178,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				if(!shouldUpdate) {return;}
 
 				TextChannel channel = Channels.REQUEST.getAsChannel(guild);
-				Webhook webhook = WebhookManager.getWebhook(channel, "GateKeeper");
+				Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 				if(webhook == null) {return;}
 
 				long now = System.currentTimeMillis();
@@ -223,12 +224,12 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				.setColor(Color.decode("#e67e22"))
 				.setImage("attachment://notpass.png")
 				.setFooter("Request heeft een cooldown van " + REQUEST_COOLDOWN_HOURS + " uur.")
-				.build();
+			.build();
 		}
 
 		private void setupMessage(ReplyOperation o, Guild guild) {
 			TextChannel channel = Channels.REQUEST.getAsChannel(guild);
-			Webhook webhook = WebhookManager.getWebhook(channel, "GateKeeper");
+			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {if(o != null) {o.sendFailed("Ik kan het bericht op dit moment niet versturen.");} return;}
 			String webhookName = guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪";
 			if(o == null) {o = new ReplyOperation(webhook, webhookName);}

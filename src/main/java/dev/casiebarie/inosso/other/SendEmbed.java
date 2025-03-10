@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class SendEmbed extends ListenerAdapter implements CommandListener, Information {
@@ -125,7 +127,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 	public void sendInformation(@NotNull ReplyOperation o) {
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.CYAN)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :outbox_tray: Sturen Help :outbox_tray:\n" +
 				"Met het commando `/stuur` kun je " + o.e.getGuild().getSelfMember().getAsMention() + "  een bericht laten sturen. Dit kan een gewoon bericht zijn of een bericht met meerdere embeds.\n" +
 				"Wil je een embed maken? Gebruik dan bijvoorbeeld [deze site](https://message.style/app/editor). " +
@@ -133,7 +135,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 				"\n\nEen gewoon bericht wordt direct verstuurd. Bij een embed toont de bot eerst een voorbeeld en vraagt of je het wilt verzenden.");
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 }

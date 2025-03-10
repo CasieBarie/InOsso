@@ -35,10 +35,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static dev.casiebarie.inosso.Main.jda;
-import static dev.casiebarie.inosso.enums.Variables.COME_COOLDOWN_HOURS;
+import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Come extends ListenerAdapter implements CommandListener, Information {
+	static final String WEBHOOK_ID = "Come";
 	Map<String, GuildComeManager> managers = new HashMap<>();
 	public Come(@NotNull ClassLoader classes) {
 		classes.registerAsEventListener(this);
@@ -88,14 +89,14 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setDescription("# :loudspeaker: Komen Help :loudspeaker:\n" +
 				"Wil je iedereen bij elkaar roepen? Gebruik dan het " + cmdMention + " command. " +
 				"Iedereen krijgt een ping om te komen, en in " + Channels.MAIN.getAsMention(guild) + " verschijnt een bericht waarop ze kunnen aangeven of ze erbij zijn. " +
 				"Dit bericht blijft `" + COME_COOLDOWN_HOURS + "` uur actief, waarin iedereen kan reageren. Tijdens deze periode kan het command niet opnieuw gebruikt worden.");
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 
@@ -126,14 +127,14 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 				if(Utils.isGuest(member, true)) {commingGuest.put(member.getId(), 0);}
 			}); commingSpecial.put(requester.getId(), 1);
 
-			Webhook webhook = WebhookManager.getWebhook(channel, "Come");
+			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {o.sendFailed("Kan het komen bericht niet versturen!"); return;}
 
 			webhook.sendMessage(builder.toString())
 				.setUsername(guild.getSelfMember().getEffectiveName() + " -  Komen📢")
 				.setEmbeds(getComeEmbed(guild))
 				.setActionRow(Button.success("come_yes", "Ja"), Button.secondary("come_maybe", "Misschien"), Button.danger("come_no", "Nee"))
-				.setFiles(Utils.loadImage("goat.png"), Utils.loadImage("empty.png"))
+				.setFiles(Utils.loadImage("goat.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 			.queue(msg -> {o.replyEmpty(); messageId = msg.getId();}, o::sendFailed);
 			Main.scheduledPool.schedule(this::deleteManager, cooldown - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 		}
@@ -142,7 +143,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 			Guild guild = e.getGuild();
 			Member member = e.getMember();
 			TextChannel channel = Channels.MAIN.getAsChannel(guild);
-			Webhook webhook = WebhookManager.getWebhook(channel, "Come");
+			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {o.sendFailed("Ik kan op dit moment je reactie niet verwerken."); return;}
 
 			String btnId = e.getButton().getId();
@@ -160,7 +161,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 					"\n" + Utils.getAsMention(requester) + " wil met jullie spelen..." +
 					"\n### Kom je ook?")
 				.setColor(requester.getColor())
-				.setImage("attachment://empty.png")
+				.setImage(EMPTY_IMAGE)
 				.setThumbnail("attachment://goat.png");
 
 			addField(eb, "Ja", 1, guild);
@@ -179,7 +180,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 		private void deleteManager() {
 			Guild guild = jda().getGuildById(guildId);
 			TextChannel channel = Channels.MAIN.getAsChannel(guild);
-			Webhook webhook = WebhookManager.getWebhook(channel, "Come");
+			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {return;}
 			webhook.editMessageById(messageId, "").setEmbeds(getComeEmbed(guild)).setComponents().queue(null, ReplyOperation::error);
 		}

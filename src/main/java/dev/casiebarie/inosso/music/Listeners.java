@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.enums.Variables.ACTION_CANCELLED_MSG;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Listeners extends ListenerAdapter implements ScheduledTask {
@@ -61,33 +62,47 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 
 		Main.pool.execute(() -> {
 			if(!Utils.isInVoice(e.getMember(), o)) {return;}
-
 			switch(e.getButton().getId().split("_")[1]) {
-			case "pause" -> {
-				if(manager.player.getPlayingTrack() == null || manager.scheduler.loopingTrack != null) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				boolean paused = manager.player.isPaused();
-				manager.player.setPaused(!paused);
-				o.sendSuccess("Muziek is " + (paused ? "hervat!" : "gepauzeerd!"));}
-			case "skip" -> {
-				AudioPlayer player = manager.player;
-				if(player.getPlayingTrack() == null) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				if(manager.scheduler.queue.isEmpty() || manager.scheduler.loopingTrack != null) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				manager.scheduler.nextTrack(true);
-				o.sendSuccess("Nummer geskipt!");}
-			case "replay" -> {
-				if(manager.player.getPlayingTrack() == null) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				manager.scheduler.replay(o);}
-			case "stop" -> {
-				if(!music.controllers.get(guild.getId()).isConnected) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				o.replyEmpty();
-				music.stopMusic(e.getGuild(), true);}
+			case "pause" -> pause(manager, o);
+			case "skip" -> skip(manager, o);
+			case "replay" -> replay(manager, o);
+			case "stop" -> stop(o);
 			case "viewqueue" -> music.queueViewer.viewQueue(music, e);
 			case "movetoone" -> music.moveToOne(manager.scheduler, o);
-			case "emptyqueue" -> {
-				if(manager.scheduler.queue.isEmpty()) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
-				manager.scheduler.queue.clear();
-				o.sendSuccess("Wachtlijst leeggemaakt!");}
+			case "emptyqueue" -> emptyQueue(manager, o);
 			default -> {/*IGNORED*/}}
 		});
+	}
+
+	private void pause(GuildMusicManager manager, ReplyOperation o) {
+		if(manager.player.getPlayingTrack() == null || manager.scheduler.loopingTrack != null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		boolean paused = manager.player.isPaused();
+		manager.player.setPaused(!paused);
+		o.sendSuccess("Muziek is " + (paused ? "hervat!" : "gepauzeerd!"));
+	}
+
+	private void skip(GuildMusicManager manager, ReplyOperation o) {
+		AudioPlayer player = manager.player;
+		if(player.getPlayingTrack() == null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		if(manager.scheduler.queue.isEmpty() || manager.scheduler.loopingTrack != null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		manager.scheduler.nextTrack(true);
+		o.sendSuccess("Nummer geskipt!");
+	}
+
+	private void replay(GuildMusicManager manager, ReplyOperation o) {
+		if(manager.player.getPlayingTrack() == null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		manager.scheduler.replay(o);
+	}
+
+	private void stop(ReplyOperation o) {
+		if(!music.controllers.get(o.e.getGuild().getId()).isConnected) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		o.replyEmpty();
+		music.stopMusic(o.e.getGuild(), true);
+	}
+
+	private void emptyQueue(GuildMusicManager manager, ReplyOperation o) {
+		if(manager.scheduler.queue.isEmpty()) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
+		manager.scheduler.queue.clear();
+		o.sendSuccess("Wachtlijst leeggemaakt!");
 	}
 }

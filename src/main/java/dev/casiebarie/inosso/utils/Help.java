@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static dev.casiebarie.inosso.Main.jda;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 
 public class Help implements CommandListener, Information {
 	final ClassLoader classes;
@@ -62,7 +64,7 @@ public class Help implements CommandListener, Information {
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(o.e.getMember().getColor())
 			.setThumbnail("attachment://avatar.png")
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setFooter("Gemaakt door " + cas.getEffectiveName(), "attachment://avatar1.png");
 
 		StringBuilder builder = new StringBuilder("# :nerd: Nerd Info :nerd:");
@@ -98,7 +100,7 @@ public class Help implements CommandListener, Information {
 			.append("\n　_Gebruikt: `").append(usedMemory).append("MB`_");
 
 		o.e.getHook().sendMessageEmbeds(eb.setDescription(builder.toString()).build())
-			.setFiles(Utils.loadAvatar(self.getEffectiveAvatarUrl()), Utils.loadAvatar(cas.getEffectiveAvatarUrl(), 1), Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadAvatar(self.getEffectiveAvatarUrl()), Utils.loadAvatar(cas.getEffectiveAvatarUrl(), 1), Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 }

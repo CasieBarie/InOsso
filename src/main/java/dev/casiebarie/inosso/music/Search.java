@@ -32,10 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Search extends ListenerAdapter {
 	final Music music;
+	static final String WEBHOOK_ID = "Search";
 	Map<String, String> messageIds = new HashMap<>();
 	Map<String, List<AudioTrack>> searchOptions = new HashMap<>();
 	public Search(@NotNull ClassLoader classes, Music music) {
@@ -56,7 +59,7 @@ public class Search extends ListenerAdapter {
 		e.getMessage().delete().queue(null, ReplyOperation::error);
 
 		Main.pool.execute(() -> {
-			Webhook webhook = WebhookManager.getWebhook(channel, "Search");
+			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {return;}
 			ReplyOperation o = new ReplyOperation(webhook, webhookName);
 
@@ -70,12 +73,12 @@ public class Search extends ListenerAdapter {
 				.setColor(Color.decode("#00ffff"))
 				.setDescription("# <a:loading:1331405235297456203> Zoeken\nIk ben voor " + Utils.getAsMention(sender) + " aan het zoeken naar:\n\n`" + Utils.truncate(msg, 300) + "`")
 				.setThumbnail(isYoutube ? "attachment://youtube.png" : "attachment://web.png")
-				.setImage("attachment://empty.png")
+				.setImage(EMPTY_IMAGE)
 				.setFooter("Heb even geduld alstublieft.");
 
 			webhook.sendMessageEmbeds(eb.build())
 				.setUsername(webhookName)
-				.setFiles(Utils.loadImage("empty.png"), Utils.loadImage(isYoutube ? "youtube.png" : "web.png"))
+				.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadImage(isYoutube ? "youtube.png" : "web.png"))
 			.queue(message -> {
 				messageIds.put(sender.getId(), message.getId());
 				PlayerManager.getInstance(music).getGuildMusicManager(guild).scheduler.load(o, sender, msg, isYoutube);
@@ -114,7 +117,7 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.GREEN)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail(isYoutube ? "attachment://youtube.png" : "attachment://web.png")
 			.setDescription("# :tada: Toegevoegd!" +
 				"\n> **" + Utils.truncate(track.getInfo().title, 180) + "**" +
@@ -124,9 +127,9 @@ public class Search extends ListenerAdapter {
 
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
 		String msgId = messageIds.remove(searcher.getId());
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build())
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build())
 			.setComponents()
-			.setFiles(Utils.loadImage("empty.png"), Utils.loadImage(isYoutube ? "youtube.png" : "web.png"))
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadImage(isYoutube ? "youtube.png" : "web.png"))
 		.queue(
 			msg -> {
 				o.replyEmpty();
@@ -155,11 +158,11 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.ORANGE)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://youtube.png")
 			.setDescription("# :question: Gevonden (denk ik)\nIk heb meerdere nummers gevonden, kies er maar een!\n\n_Gezocht door: " + Utils.getAsMention(searcher) + "_");
 
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build()).setComponents(ActionRow.of(
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build()).setComponents(ActionRow.of(
 			StringSelectMenu.create("searchmusic_" + searcher.getId())
 				.setPlaceholder("Kies een lekker nummertje!")
 				.setRequiredRange(1, 1)
@@ -180,11 +183,11 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.GREEN)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://web.png")
 			.setDescription("# :tada: Toegevoegd!\nIk heb `" + count + "` nummer uit de lijst `" + Utils.truncate(playlist.getName(), 300) + "` toegevoegd aan de wachtrij!\n\n_Toegevoegd door: " + Utils.getAsMention(searcher) + "_");
 
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build()).queue(
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build()).queue(
 			msg -> {
 				o.replyEmpty();
 				msg.delete().queueAfter(5, TimeUnit.SECONDS, null, o::sendFailed);
@@ -200,13 +203,13 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://geenmuziekjes.png")
 			.setDescription("# :x: Niet gevonden\n`" + Utils.truncate(url, 300) + "`\nheeft helaas niets opgeleverd.\n\n_Gezocht door " + Utils.getAsMention(searcher) + "_")
 			.setFooter("Probeer het opnieuw.");
 
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build())
-			.setFiles(Utils.loadImage("empty.png"), Utils.loadImage("geenmuziekjes.png"))
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build())
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadImage("geenmuziekjes.png"))
 		.queue(
 			msg -> {
 				o.replyEmpty();
@@ -223,13 +226,13 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://geenmuziekjes.png")
 			.setDescription("# :warning: Er is iets fout gegaan!\n`" + Utils.truncate(url, 300) + "` heeft een error veroorzaakt!\n\nVraag aan " + Utils.getCas(guild).getAsMention() + " om in de console te kijken.\n\n_Gezocht door " + Utils.getAsMention(searcher) + "_")
 			.setFooter("Probeer het later opnieuw.");
 
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build())
-			.setFiles(Utils.loadImage("empty.png"), Utils.loadImage("geenmuziekjes.png"))
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build())
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadImage("geenmuziekjes.png"))
 		.queue(
 			msg -> {
 				o.replyEmpty();
@@ -245,12 +248,12 @@ public class Search extends ListenerAdapter {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://geenmuziekjes.png")
 			.setDescription("# :x: Wachtrij vol!\nWacht tot een paar nummers zijn afgelopen.\n\n_Gezocht door: " + Utils.getAsMention(searcher) + "_");
 
-		WebhookManager.getWebhook(channel, "Search").editMessageEmbedsById(msgId, eb.build())
-			.setFiles(Utils.loadImage("empty.png"), Utils.loadImage("geenmuziekjes.png"))
+		WebhookManager.getWebhook(channel, WEBHOOK_ID).editMessageEmbedsById(msgId, eb.build())
+			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadImage("geenmuziekjes.png"))
 		.queue(
 			msg -> {
 				o.replyEmpty();

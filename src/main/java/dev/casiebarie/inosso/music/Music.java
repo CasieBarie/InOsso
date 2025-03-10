@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static dev.casiebarie.inosso.enums.Variables.MAX_QUEUE_SIZE;
+import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Music implements Information {
@@ -67,14 +67,14 @@ public class Music implements Information {
 					"\n- Wachtrij geleegd." +
 					"\n- Call verlaten.")
 				.setThumbnail("attachment://geenmuziekjes.png")
-				.setImage("attachment://empty.png")
+				.setImage(EMPTY_IMAGE)
 				.setColor(Color.RED).build())
-			.setFiles(Utils.loadImage("geenmuziekjes.png"), Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage("geenmuziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(msg -> msg.delete().queueAfter(5, TimeUnit.SECONDS));
 	}
 
 	protected void moveToOne(@NotNull TrackScheduler scheduler, ReplyOperation o) {
-		if(scheduler.queue.size() <= 1) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
+		if(scheduler.queue.size() <= 1) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 
 		LinkedList<AudioTrack> list = new LinkedList<>(scheduler.queue);
 		AudioTrack lastTrack = list.remove(list.size() - 1);
@@ -91,9 +91,9 @@ public class Music implements Information {
 					"\n\nis verplaatst naar de top van de wachtrij!")
 				.setColor(Color.GREEN)
 				.setThumbnail("attachment://muziekjes.png")
-				.setImage("attachment://empty.png")
-				.build()
-		).setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage("empty.png")).queue(success -> getLogger().debug("Song {} has been moved to #1 in guild {}", lastTrack.getInfo().title, Logger.getGuildNameAndId(o.e.getGuild())), o::sendFailed);
+				.setImage(EMPTY_IMAGE)
+			.build()
+		).setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH)).queue(success -> getLogger().debug("Song {} has been moved to #1 in guild {}", lastTrack.getInfo().title, Logger.getGuildNameAndId(o.e.getGuild())), o::sendFailed);
 	}
 
 	public void playJachtseizoen(Guild guild) {
@@ -130,7 +130,7 @@ public class Music implements Information {
 
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.CYAN)
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://muziekjes.png")
 			.setDescription("# :trumpet: Muziekjes Help :trumpet:\n" +
 				"Muziek afspelen is heel eenvoudig! Stuur een bericht met de titel of URL van een nummer/afspeellijst in " + Channels.MUSIC.getAsMention(guild) + " en het wordt automatisch opgezocht. " +
@@ -151,7 +151,7 @@ public class Music implements Information {
 			).setFooter("Veel plezier met luisteren!");
 
 		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 		.queue(null, o::sendFailed);
 	}
 }

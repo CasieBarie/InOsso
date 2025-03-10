@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Guest implements CommandListener {
@@ -61,7 +62,7 @@ public class Guest implements CommandListener {
 			if(!add || webhook == null) {o.sendSuccess(String.format("%s is nu een %s!", guest.getAsMention(), add ? gastAllowed.getAsMention() : gastRestricted.getAsMention())); return;}
 
 			webhook.sendMessageEmbeds(Request.answeredEmbed(guest, true))
-				.setFiles(Utils.loadImage("empty.png"), Utils.loadAvatar(guest.getEffectiveAvatarUrl()))
+				.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(guest.getEffectiveAvatarUrl()))
 			.queue(s -> o.replyEmpty(), o::sendFailed);
 		});
 	}

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.util.Queue;
 
+import static dev.casiebarie.inosso.enums.Variables.ACTION_CANCELLED_MSG;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class QueueViewer {
@@ -23,7 +24,7 @@ public class QueueViewer {
 		ReplyOperation o = new ReplyOperation(e);
 		GuildMusicManager manager = PlayerManager.getInstance(music).getGuildMusicManager(guild);
 		Queue<AudioTrack> queue = manager.scheduler.queue;
-		if(queue.isEmpty()) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
+		if(queue.isEmpty()) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		e.getHook().editOriginal("_De wachtrij wordt mogelijk niet goed weergegeven op mobiele apparaten._")
 			.setEmbeds(new MessageEmbed[0])
 			.setFiles(createQueue(queue, guild))

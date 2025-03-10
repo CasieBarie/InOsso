@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Queue;
 
 import static dev.casiebarie.inosso.Main.jda;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Controller {
@@ -36,7 +38,7 @@ public class Controller {
 	Queue<AudioTrack> queue;
 	MessageEmbed currentEmbed;
 	GuildMusicManager manager;
-	String controllerId = "0";
+	String controllerId = "0", webhookId = "Controller";
 	AudioTrack nowPlayingTrack, overridenTrack;
 	List<ActionRow> currentActionRows = new ArrayList<>();
 	public boolean isConnected = false, forceUpdate = false;
@@ -53,7 +55,7 @@ public class Controller {
 
 		Guild guild = jda().getGuildById(guildId);
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
-		Webhook webhook = WebhookManager.getWebhook(channel, "Controller");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		if(webhook == null) {return;}
 
 		long now = System.currentTimeMillis();
@@ -95,7 +97,7 @@ public class Controller {
 				"\n### Volgende:" + getNextTracks())
 			.setColor(Color.CYAN)
 			.setThumbnail("attachment://muziekjes.png")
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 		.build();
 	}
 
@@ -146,7 +148,7 @@ public class Controller {
 		Guild guild = jda().getGuildById(guildId);
 		String webhookName = jda().getGuildById(guildId).getSelfMember().getEffectiveName() + " -  Muziekjes🎺";
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
-		Webhook webhook = WebhookManager.getWebhook(channel, "Controller");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		if(o == null) {o = new ReplyOperation(webhook, webhookName);}
 		if(webhook == null) {o.sendFailed("Ik kan op dit moment geen nieuwe controller sturen."); return;}
 
@@ -161,7 +163,7 @@ public class Controller {
 			webhook.sendMessageEmbeds(currentEmbed)
 				.setUsername(webhookName)
 				.setComponents(currentActionRows)
-				.setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage("empty.png"))
+				.setFiles(Utils.loadImage("muziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 			.queue(msg -> {
 				controllerId = msg.getId();
 				notFound = false;

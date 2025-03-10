@@ -30,7 +30,7 @@ public class GuildManager {
 	final String guildId;
 	final Jachtseizoen jacht;
 	ActionRow currentActionRow;
-	String messageId, webhookName;
+	String messageId, webhookName, webhookId = "Jachtseizoen";
 	MessageEmbed currentRules, currentGame;
 	boolean shouldUpdate = false, isPaused = false;
 	long startTime, inGameTime, totalPausedTime, pauseStartTime, nextLookTime, remainingLookCooldown, lastUpdate = 0;
@@ -45,19 +45,19 @@ public class GuildManager {
 		currentRules = jacht.createRules(o.e.getMember());
 		updateButtons();
 
-		Webhook webhook = WebhookManager.getWebhook(channel, "Jachtseizoen");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		if(webhook == null) {o.sendFailed("Kan jachtseizoen bericht niet versturen!"); return;}
 		webhookName = guild.getSelfMember().getEffectiveName() + " -  Jachtseizoen👮";
 
 		webhook.sendMessageEmbeds(currentRules)
 			.setUsername(webhookName)
-			.setFiles(Utils.loadImage("jachtseizoen.png"), Utils.loadImage("empty.png"))
+			.setFiles(Utils.loadImage("jachtseizoen.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 			.setComponents(currentActionRow)
 		.queue(msg -> {messageId = msg.getId(); o.replyEmpty();}, o::sendFailed);
 	}
 
 	protected void onStartButton(ReplyOperation o) {
-		if(gameStatus != 0) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
+		if(gameStatus != 0) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		startTime = System.currentTimeMillis();
 		gameStatus = 1;
 		totalPausedTime = 0;
@@ -68,11 +68,11 @@ public class GuildManager {
 	}
 
 	protected void onRerollButton(ReplyOperation o) {
-		if(gameStatus != 0) {o.sendFailed("Actie geannuleerd! Je was te snel."); return;}
+		if(gameStatus != 0) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		currentRules = jacht.createRules(o.e.getMember());
 		shouldUpdate = true;
 		TextChannel channel = Channels.MAIN.getAsChannel(o.e.getGuild());
-		Webhook webhook = WebhookManager.getWebhook(channel, "Jachtseizoen");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		new ReplyOperation(webhook, webhookName).sendSuccess("Regels zijn veranderd door " + Utils.getAsMention(o.e.getMember()) + ".");
 		o.replyEmpty();
 	}
@@ -85,7 +85,7 @@ public class GuildManager {
 	protected void onCancelButton(@NotNull ReplyOperation o) {
 		jacht.stopPlaying(o.e.getGuild(), true);
 		TextChannel channel = Channels.MAIN.getAsChannel(o.e.getGuild());
-		Webhook webhook = WebhookManager.getWebhook(channel, "Jachtseizoen");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		webhook.deleteMessageById(messageId).queue(msg -> o.replyEmpty(), ReplyOperation::error);
 	}
 
@@ -95,11 +95,11 @@ public class GuildManager {
 		MessageEmbed endEmbed = new EmbedBuilder()
 			.setColor(Color.RED)
 			.setDescription("# :no_entry: Spel geëindigd :no_entry:\n- Totale speeltijd: `" + Utils.formatDuration(inGameTime) + "`")
-			.setImage("attachment://empty.png")
+			.setImage(EMPTY_IMAGE)
 		.build();
 
 		TextChannel channel = Channels.MAIN.getAsChannel(guild);
-		Webhook webhook = WebhookManager.getWebhook(channel, "Jachtseizoen");
+		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		webhook.editMessageEmbedsById(messageId, currentRules, endEmbed).setComponents().queue(null, ReplyOperation::error);
 	}
 
