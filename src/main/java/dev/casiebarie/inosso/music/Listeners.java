@@ -12,8 +12,11 @@ import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,14 +77,33 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		});
 	}
 
-	private void pause(GuildMusicManager manager, ReplyOperation o) {
+	@Override
+	public void onMessageReceived(@NotNull MessageReceivedEvent e) {
+		if(!e.isFromGuild() || e.getAuthor().isBot()) {return;}
+		Member sender = e.getMember();
+		TextChannel channel = Channels.MUSIC.getAsChannel(sender.getGuild());
+
+		if(!e.getGuildChannel().equals(channel)) {return;}
+		Logger.debug(getLogger(), "Music search message received by {}", () -> new String[] {Logger.getUserNameAndId(sender.getUser())});
+		e.getMessage().delete().queue(null, ReplyOperation::error);
+
+		Main.pool.execute(() -> new Search(music, sender, e.getMessage().getContentRaw()));
+	}
+
+	@Override
+	public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent e) {
+		if(!e.getSelectMenu().getId().startsWith("searchmusic_")) {return;}
+		new ReplyOperation(e).replyEmpty();
+	}
+
+	private void pause(@NotNull GuildMusicManager manager, ReplyOperation o) {
 		if(manager.player.getPlayingTrack() == null || manager.scheduler.loopingTrack != null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		boolean paused = manager.player.isPaused();
 		manager.player.setPaused(!paused);
 		o.sendSuccess("Muziek is " + (paused ? "hervat!" : "gepauzeerd!"));
 	}
 
-	private void skip(GuildMusicManager manager, ReplyOperation o) {
+	private void skip(@NotNull GuildMusicManager manager, ReplyOperation o) {
 		AudioPlayer player = manager.player;
 		if(player.getPlayingTrack() == null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		if(manager.scheduler.queue.isEmpty() || manager.scheduler.loopingTrack != null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
@@ -89,18 +111,18 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		o.sendSuccess("Nummer geskipt!");
 	}
 
-	private void replay(GuildMusicManager manager, ReplyOperation o) {
+	private void replay(@NotNull GuildMusicManager manager, ReplyOperation o) {
 		if(manager.player.getPlayingTrack() == null) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		manager.scheduler.replay(o);
 	}
 
-	private void stop(ReplyOperation o) {
+	private void stop(@NotNull ReplyOperation o) {
 		if(!music.controllers.get(o.e.getGuild().getId()).isConnected) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		o.replyEmpty();
 		music.stopMusic(o.e.getGuild(), true);
 	}
 
-	private void emptyQueue(GuildMusicManager manager, ReplyOperation o) {
+	private void emptyQueue(@NotNull GuildMusicManager manager, ReplyOperation o) {
 		if(manager.scheduler.queue.isEmpty()) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
 		manager.scheduler.queue.clear();
 		o.sendSuccess("Wachtlijst leeggemaakt!");

@@ -24,8 +24,10 @@ public class Logger {
 
 	private void setFilters() {
 		List<String> filters = new ArrayList<>(List.of(
-			"dev.lavalink.youtube", "dev.lavalink.soundcloud", "dev.lavalink.http",
-			"com.sedmelluq.lava.common.natives", "com.sedmelluq.lava.common.tools", "com.sedmelluq.discord.lavaplayer"
+			"com.sedmelluq.lava.common.natives", "com.sedmelluq.lava.common.tools",
+			"com.sedmelluq.discord.lavaplayer",
+			"dev.lavalink.soundcloud", "dev.lavalink.bandcamp", "dev.lavalink.http",
+			"dev.lavalink.vimeo", "dev.lavalink.twitch", "dev.lavalink.local"
 		));
 
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

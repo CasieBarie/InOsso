@@ -27,11 +27,9 @@ import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Music implements Information {
-	public final Search search;
 	public final QueueViewer queueViewer;
 	public final Map<String, Controller> controllers = new HashMap<>();
 	public Music(ClassLoader classes) {
-		this.search = new Search(classes, this);
 		this.queueViewer = new QueueViewer();
 		new Listeners(classes, this);
 		classes.registerAsInformationClass("muziekjes", this);
@@ -135,10 +133,10 @@ public class Music implements Information {
 			.setDescription("# :trumpet: Muziekjes Help :trumpet:\n" +
 				"Muziek afspelen is heel eenvoudig! Stuur een bericht met de titel of URL van een nummer/afspeellijst in " + Channels.MUSIC.getAsMention(guild) + " en het wordt automatisch opgezocht. " +
 				"Zorg ervoor dat je in " + Channels.VOICE.getAsMention(guild) + " zit! " +
-				"Als de link niet wordt ondersteund, zoekt " + self.getAsMention() + " automatisch op YouTube en geeft je maximaal vijf opties om uit te kiezen. " +
+				"Als de link niet wordt ondersteund, zoekt " + self.getAsMention() + " automatisch op SoundCloud en geeft je maximaal vijf opties om uit te kiezen. " +
 				"Het gevonden nummer wordt direct afgespeeld of aan de wachtrij toegevoegd. De wachtrij heeft een limiet van `" + MAX_QUEUE_SIZE + "` nummers." +
 				"\n### :paperclip: | Welke links kun je gebruiken?" +
-				"\n**YouTube**\n**Soundcloud**\n**Bandcamp**\n**Vimeo**\n**Twitch streams**" +
+				"\n**Soundcloud**\n**Bandcamp**\n**Vimeo**\n**Twitch streams**" +
 				"\n**HTTP URLs** Alle links die eindigen met `.mp3`, `.flac`, `.wav`, `.mka`, `.webm`, `.mp4`, `.m4a`, `.ogg`, `.opus`, `.aac`, `.m3u`, `.pls`." +
 				"\n### :control_knobs: | Hoe bedien je de muziek?" +
 				"\nZodra de muziek speelt, kun je met deze knoppen de boel regelen:" +

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.casiebarie</groupId>
     <artifactId>InOsso</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0-INDEV</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -13,7 +13,6 @@
 
         <version.jda>5.3.0</version.jda>
         <version.lavaplayer>2.2.3</version.lavaplayer>
-        <version.youtube>1.11.5</version.youtube>
         <version.udpqueue>0.2.9</version.udpqueue>
         <version.logback>1.5.17</version.logback>
         <version.slf4j>2.0.16</version.slf4j>
@@ -49,11 +48,6 @@
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>${version.lavaplayer}</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.lavalink.youtube</groupId>
-            <artifactId>common</artifactId>
-            <version>${version.youtube}</version>
         </dependency>
         <dependency>
             <groupId>club.minnced</groupId>

@@ -88,18 +88,18 @@ public class Utils {
 		return escapeMarkdown(text.substring(0, endIndex) + "…");
 	}
 
-	public static boolean isAudioUrl(String url) {
+	/**0 = Search<br>1 = Supported Link<br>2 = Unsupported*/
+	public static int getAudioType(String url) {
 		Set<String> extensions = Set.of("mp3", "flac", "wav", "mka", "webm", "mp4", "m4a", "ogg", "opus", "aac", "m3u", "pls");
-		Set<String> domains = Set.of("youtube.com", "youtu.be", "music.youtube.com", "soundcloud.com", "m.soundcloud.com", "on.soundcloud.com", "snd.sc", "bandcamp.com", "vimeo.com", "twitch.tv", "m.twitch.tv", "clips.twitch.tv");
+		Set<String> domains = Set.of("soundcloud.com", "m.soundcloud.com", "on.soundcloud.com", "snd.sc", "bandcamp.com", "vimeo.com", "twitch.tv", "m.twitch.tv", "clips.twitch.tv");
 		try {
 			URL link = new URL(url);
 			String host = link.getHost().toLowerCase();
-			if(domains.stream().anyMatch(domain -> host.equals(domain) || host.endsWith("." + domain))) {return true;}
+			if(domains.stream().anyMatch(domain -> host.equals(domain) || host.endsWith("." + domain))) {return 1;}
 			String path = link.getPath().toLowerCase();
 			int dotIndex = path.lastIndexOf('.');
-			if(dotIndex == -1) {return false;}
-			return extensions.contains(path.substring(dotIndex + 1));
-		} catch(MalformedURLException e) {return false;}
+			return dotIndex == -1 || !extensions.contains(path.substring(dotIndex + 1)) ? 2 : 1;
+		} catch(MalformedURLException ex) {return 0;}
 	}
 
 	public static @NotNull Properties getProperties() {

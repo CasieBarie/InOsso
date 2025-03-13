@@ -2,17 +2,12 @@ package dev.casiebarie.inosso.music.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.yamusic.YandexMusicAudioSourceManager;
 import dev.casiebarie.inosso.music.Music;
-import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,16 +34,11 @@ public class PlayerManager {
 		System.setProperty("lavaplayer.non-allocating-audio-frame-buffer", "true");
 
 		audioPlayerManager = new DefaultAudioPlayerManager();
-		audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager());
 		audioPlayerManager.registerSourceManager(new LocalAudioSourceManager());
 		audioPlayerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
 		audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
 		audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
 		audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-		audioPlayerManager.registerSourceManager(new BeamAudioSourceManager());
-		audioPlayerManager.registerSourceManager(new GetyarnAudioSourceManager());
-		audioPlayerManager.registerSourceManager(new NicoAudioSourceManager());
-		audioPlayerManager.registerSourceManager(new YandexMusicAudioSourceManager(true));
 		audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
 
 		getLogger().debug("Initialized player manager");

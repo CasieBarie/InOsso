@@ -17,7 +17,6 @@ import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,14 +49,8 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	@Override
 	public void onTrackEnd(AudioPlayer player, @NotNull AudioTrack track, AudioTrackEndReason endReason) {
-		if(track.getIdentifier().equals("silence.opus")) {
-			player.playTrack(queue.poll());
-			return;
-		}
-
-		if(endReason.mayStartNext) {
-			nextTrack(false);
-		}
+		if(track.getIdentifier().equals("silence.opus")) {player.playTrack(queue.poll()); return;}
+		if(endReason.mayStartNext) {nextTrack(false);}
 	}
 
 	@Override
@@ -65,8 +58,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		String trackTitle = Utils.truncate(track.getInfo().title, 180);
 		getLogger().error("Error playing track: {}", trackTitle, exception);
 		Guild guild = jda().getGuildById(guildId);
-		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild))
-			.sendFailed(String.format("Error bij het afspelen van: `%s`", trackTitle));
+		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild)).sendFailed(String.format("Error bij het afspelen van: `%s`", trackTitle));
 	}
 
 	@Override
@@ -74,8 +66,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		String trackTitle = Utils.truncate(track.getInfo().title, 180);
 		getLogger().warn("Track stuck: {} (Threshold: {}ms)", trackTitle, thresholdMs);
 		Guild guild = jda().getGuildById(guildId);
-		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild))
-			.sendFailed(String.format("Het nummer `%s` is vastegelopen en wordt geskipt.", trackTitle));
+		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild)).sendFailed(String.format("Het nummer `%s` is vastegelopen en wordt geskipt.", trackTitle));
 		nextTrack(true);
 	}
 
@@ -178,20 +169,6 @@ public class TrackScheduler extends AudioEventAdapter {
 		wasPaused = false;
 	}
 
-	public void load(ReplyOperation o, @NotNull Member member, String url, boolean isYoutube) {
-		Guild guild = member.getGuild();
-		PlayerManager manager = PlayerManager.getInstance(music);
-		GuildMusicManager guilfManager = manager.getGuildMusicManager(guild);
-		if(guilfManager.scheduler.queue.size() >= MAX_QUEUE_SIZE) {music.search.queueFull(o, member); return;}
-
-		manager.getAudioPlayerManager().loadItemOrdered(guilfManager, isYoutube ? "ytsearch:" + url : url, new AudioLoadResultHandler() {
-			@Override public void trackLoaded(AudioTrack audioTrack) {music.search.trackLoaded(o, member, audioTrack, isYoutube);}
-			@Override public void playlistLoaded(AudioPlaylist audioPlaylist) {music.search.playListFound(o, member, audioPlaylist, isYoutube);}
-			@Override public void noMatches() {music.search.noMatches(o, member, url);}
-			@Override public void loadFailed(FriendlyException e) {music.search.loadFailed(o, member, url, e);}
-		});
-	}
-
 	private void copyAndSaveTrack(@NotNull AudioTrack track, String adder, ReplyOperation o) {
 		PlayerManager manager = PlayerManager.getInstance(music);
 		manager.getAudioPlayerManager().loadItemOrdered(manager.getGuildMusicManager(jda().getGuildById(guildId)), track.getInfo().identifier, new AudioLoadResultHandler() {
@@ -207,8 +184,7 @@ public class TrackScheduler extends AudioEventAdapter {
 							"\n> **" + Utils.truncate(audioTrack.getInfo().title, 180) + "**" +
 							"\n> " + Utils.truncate(audioTrack.getInfo().author, 180) +
 							"\n> *(" + Utils.formatDuration(audioTrack.getDuration()) + ")*" +
-							"\n\nwordt opnieuw afgespeeld!"
-						)
+							"\n\nwordt opnieuw afgespeeld!")
 						.setColor(Color.GREEN)
 						.setThumbnail("attachment://muziekjes.png")
 						.setImage(EMPTY_IMAGE)
@@ -217,23 +193,10 @@ public class TrackScheduler extends AudioEventAdapter {
 				getLogger().debug("Track loaded: {}", track.getInfo().title);
 			}
 
-			@Override
-			public void playlistLoaded(AudioPlaylist audioPlaylist) {
-				getLogger().debug("Playlist loaded: {}", audioPlaylist.getName());
-				if(o != null) {o.sendFailed("Opnieuw afspelen mislukt. Probeer het later opnieuw.");}
-			}
-
-			@Override
-			public void noMatches() {
-				getLogger().debug("No matches found for the track: {}", track.getInfo().identifier);
-				if(o != null) {o.sendFailed("Opnieuw afspelen mislukt. Probeer het later opnieuw.");}
-			}
-
-			@Override
-			public void loadFailed(FriendlyException e) {
-				getLogger().debug("Load failed", e);
-				if(o != null) {o.sendFailed("Opnieuw afspelen mislukt. Probeer het later opnieuw.");}
-			}
+			@Override public void playlistLoaded(AudioPlaylist audioPlaylist) {replayFailed();}
+			@Override public void noMatches() {replayFailed();}
+			@Override public void loadFailed(FriendlyException e) {replayFailed();}
+			private void replayFailed() {if(o != null) {o.sendFailed("Opnieuw afspelen mislukt. Probeer het later opnieuw.");}}
 		});
 	}
 }
