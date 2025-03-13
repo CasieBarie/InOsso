@@ -32,18 +32,13 @@ public class DependencyChecker extends ListenerAdapter {
 		properties.forEach((key, value) -> {
 			if(!key.toString().endsWith(".version")) {return;}
 			String dependency = key.toString().replace(".version", "");
-			String[] parts = value.toString().split(";repo=");
-			checkLatestVersion(dependency, parts[0], parts[1]);
+			checkLatestVersion(dependency, value.toString());
 		}); getLogger().debug("Checking dependencies complete");
 	}
 
-	private void checkLatestVersion(String dependency, String currentVersion, String repo) {
+	private void checkLatestVersion(String dependency, String currentVersion) {
 		String latestVersion = null;
-		try {
-			latestVersion = switch (repo) {
-				case "lavalink" -> getLatestVersion(dependency, false);
-				case "mavenCentral" -> getLatestVersion(dependency, true);
-			default -> throw new IllegalArgumentException("Unknown repository: " + repo);};
+		try {latestVersion = getLatestVersion(dependency);
 		} catch(Exception ex) {getLogger().warn("Failed to check version for {}: {}", dependency, ex.getMessage());}
 
 		dependency = dependency.replace("_", ".");
@@ -51,10 +46,9 @@ public class DependencyChecker extends ListenerAdapter {
 		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().warn("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
 	}
 
-	private @Nullable String getLatestVersion(@NotNull String dependency, boolean isCentral) throws IOException {
+	private @Nullable String getLatestVersion(@NotNull String dependency) throws IOException {
 		String[] parts = dependency.split("_");
-		String groupId = isCentral ? parts[0] : parts[0].replace(".", "/");
-		String url = (isCentral) ? "https://search.maven.org/solrsearch/select?q=g:%22" + groupId + "%22+AND+a:%22" + parts[1] + "%22&rows=1&wt=json" : "https://maven.lavalink.dev/releases/" + groupId + "/" + parts[1] + "/maven-metadata.xml";
+		String url = "https://search.maven.org/solrsearch/select?q=g:%22" + parts[0] + "%22+AND+a:%22" + parts[1] + "%22&rows=1&wt=json";
 
 		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 		connection.setRequestMethod("GET");
@@ -66,20 +60,12 @@ public class DependencyChecker extends ListenerAdapter {
 
 		try(Scanner scanner = new Scanner(connection.getInputStream())) {
 			String response = scanner.useDelimiter("\\A").next();
-			String latestVersion = null;
-			if(isCentral) {
-				int versionIndex = response.indexOf("\"latestVersion\":\"");
-				if(versionIndex == -1) {return null;}
-				int start = versionIndex + 17;
-				int end = response.indexOf("\"", start);
-				if(end == -1) {return null;}
-				latestVersion = response.substring(start, end);
-			} else {
-				int start = response.indexOf("<latest>") + 8;
-				int end = response.indexOf("</latest>");
-				if(start > 8 && end > start) {latestVersion = response.substring(start, end);}
-			}
-
+			int versionIndex = response.indexOf("\"latestVersion\":\"");
+			if(versionIndex == -1) {return null;}
+			int start = versionIndex + 17;
+			int end = response.indexOf("\"", start);
+			if(end == -1) {return null;}
+			String latestVersion = response.substring(start, end);
 			if(latestVersion == null || latestVersion.contains("beta") || latestVersion.contains("SNAPSHOT") || latestVersion.contains("alpha")) {return null;}
 			return latestVersion;
 		}
