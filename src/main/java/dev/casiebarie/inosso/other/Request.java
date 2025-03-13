@@ -185,8 +185,12 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				if(now - lastUpdate < 500) {return;}
 				lastUpdate = now;
 
-				webhook.editMessageEmbedsById(messageId, requestEmbed(guild)).queue(
-					success -> shouldUpdate = false, new ErrorHandler()
+				List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
+				onlineMembers.remove(guild.getSelfMember());
+
+				webhook.editMessageEmbedsById(messageId, requestEmbed(onlineMembers))
+					.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))
+				.queue(success -> shouldUpdate = false, new ErrorHandler()
 					.handle(ErrorResponse.UNKNOWN_MESSAGE, error -> notFound = true)
 					.andThen(ReplyOperation::error)
 				);
@@ -208,17 +212,11 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			initializing = false;
 		}
 
-		private @NotNull MessageEmbed requestEmbed(Guild guild) {
-			List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
-			onlineMembers.remove(guild.getSelfMember());
-
+		private @NotNull MessageEmbed requestEmbed(List<Member> onlineMembers) {
 			StringBuilder desc = new StringBuilder("# :pray: Request :pray:" +
-				"\nOp dit moment heb je geen toegang. Druk op de knop hieronder om te vragen of je mag meedoen!" +
-				"\n\n**Nu online: (" + onlineMembers.size() + ")**"
-			);
-
+				"\nJe hebt op dit moment geen toegang. Druk op de knop hieronder om te vragen of je mag meedoen. Dit kan alleen als er iemand online is!" +
+				"\n\n**Nu online: (" + onlineMembers.size() + ")**");
 			onlineMembers.forEach(member -> desc.append("\n- ").append(member.getAsMention()));
-
 			return new EmbedBuilder()
 				.setDescription(desc.toString())
 				.setColor(Color.decode("#e67e22"))
@@ -234,15 +232,18 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			String webhookName = guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪";
 			if(o == null) {o = new ReplyOperation(webhook, webhookName);}
 
+			List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
+			onlineMembers.remove(guild.getSelfMember());
+
 			List<Message> messages = new ArrayList<>();
 			ReplyOperation finalO = o;
 			channel.getIterableHistory().forEachAsync(msg -> {
 				messages.add(msg);
 				return messages.size() < 10;
 			}).thenRun(() -> channel.purgeMessages(messages)).whenComplete((success, error) ->
-			webhook.sendMessageEmbeds(requestEmbed(guild))
+			webhook.sendMessageEmbeds(requestEmbed(onlineMembers))
 				.setUsername(webhookName)
-				.setActionRow(Button.secondary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))))
+				.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))
 				.setFiles(Utils.loadImage("notpass.png"))
 			.queue(msg -> {
 				messageId = msg.getId();
