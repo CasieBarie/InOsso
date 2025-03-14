@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -115,10 +114,6 @@ public class Music implements Information {
 	public void stopLooping(Guild guild) {
 		Logger.debug(getLogger(), "Stopping looping sound in {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
 		PlayerManager.getInstance(this).getGuildMusicManager(guild).scheduler.stopLoopingTrack();
-	}
-
-	public void onSetupCommand(@NotNull SlashCommandInteraction e) {
-		controllers.get(e.getGuild().getId()).setupController(new ReplyOperation(e));
 	}
 
 	@Override

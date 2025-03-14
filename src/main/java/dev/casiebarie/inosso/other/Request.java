@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -140,11 +139,6 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		}, o::sendFailed);
 	}
 
-	public void onSetupCommand(SlashCommandInteraction e) {
-		ReplyOperation o = new ReplyOperation(e);
-		managers.get(e.getGuild().getId()).setupMessage(o, e.getGuild());
-	}
-
 	private @NotNull MessageEmbed requestingEmbed(@NotNull Member requester) {
 		return new EmbedBuilder()
 			.setDescription("# :pray: Request :pray:\n" +
@@ -206,7 +200,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			Message message = channel.getHistoryFromBeginning(3).complete().getRetrievedHistory().stream()
 				.filter(Message::isWebhookMessage).findFirst().orElse(null);
 
-			if(message == null) {setupMessage(null, guild); return;}
+			if(message == null) {setupMessage(guild); return;}
 			messageId = message.getId();
 			notFound = false;
 			initializing = false;
@@ -225,18 +219,16 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			.build();
 		}
 
-		private void setupMessage(ReplyOperation o, Guild guild) {
+		private void setupMessage(Guild guild) {
 			TextChannel channel = Channels.REQUEST.getAsChannel(guild);
 			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
-			if(webhook == null) {if(o != null) {o.sendFailed("Ik kan het bericht op dit moment niet versturen.");} return;}
+			if(webhook == null) {return;}
 			String webhookName = guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪";
-			if(o == null) {o = new ReplyOperation(webhook, webhookName);}
 
 			List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
 			onlineMembers.remove(guild.getSelfMember());
 
 			List<Message> messages = new ArrayList<>();
-			ReplyOperation finalO = o;
 			channel.getIterableHistory().forEachAsync(msg -> {
 				messages.add(msg);
 				return messages.size() < 10;
@@ -249,9 +241,8 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				messageId = msg.getId();
 				notFound = false;
 				initializing = false;
-				finalO.sendSuccess("Request bericht is gemaakt!");
 				getLogger().info("A new request message has been created");
-			}, finalO::sendFailed));
+			}, ReplyOperation::error));
 		}
 	}
 }

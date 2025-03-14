@@ -45,6 +45,5 @@ public class ClassLoader {
 
 	public final Help help = new Help(this, informationClasses);
 	public final ScheduledTaskManager scheduledTaskManager = new ScheduledTaskManager(this, scheduledTaskClasses);
-	public final SetupCommand setupCommand = new SetupCommand(this);
 	public final CommandManager commandManager = new CommandManager(this, commandListeners);
 }
