@@ -41,7 +41,7 @@ public class Clips extends ListenerAdapter implements Information {
 	private void checkMessage(Guild guild, String messageId) {
 		TextChannel channel = Channels.CLIPS.getAsChannel(guild);
 		Message message = channel.retrieveMessageById(messageId).complete();
-		if(message == null) {Logger.debug(getLogger(), "Clip message can no longer be found in {}", () -> new String[] {Logger.getGuildNameAndId(guild)}); return;}
+		if(message == null) {getLogger().debug("Clip message can no longer be found in {}", Logger.getGuildNameAndId(guild)); return;}
 
 		boolean hasVideoEmbed = false;
 		List<MessageEmbed> embeds = message.getEmbeds();
@@ -63,8 +63,6 @@ public class Clips extends ListenerAdapter implements Information {
 				"Het " + Channels.CLIPS.getAsMention(guild) + " kanaal is alleen voor clipjes. Alle berichten die geen video-link of bestand bevatten, worden automatisch verwijderd. Deze controle duurt ongeveer `1` seconde.")
 			.setFooter("Vraag aan " + cas.getEffectiveName() + " voor eventuele versoepelingen.");
 
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 }

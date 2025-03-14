@@ -48,7 +48,7 @@ public class ScheduledTaskManager extends ListenerAdapter {
 	private void startTasks(@NotNull Guild guild) {
 		String guildId = guild.getId();
 		runningTasks.putIfAbsent(guildId, new ConcurrentHashMap<>());
-		Logger.debug(getLogger(), "Starting tasks for {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Starting tasks for {}", Logger.getGuildNameAndId(guild));
 
 		for(ScheduledTask taskClass : scheduledTasksClasses) {
 			if(runningTasks.get(guildId).containsKey(taskClass.getClass())) {continue;}
@@ -57,21 +57,21 @@ public class ScheduledTaskManager extends ListenerAdapter {
 		}
 
 		if(stopTasks.containsKey(guildId)) {
-			Logger.debug(getLogger(), "Cancelling stop for {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+			getLogger().debug("Cancelling stop for {}", Logger.getGuildNameAndId(guild));
 			stopTasks.get(guildId).cancel(false);
 			stopTasks.remove(guildId);
 		}
 	}
 
 	private void scheduleStopTasks(@NotNull Guild guild) {
-		Logger.debug(getLogger(), "Scheduling stop tasks for {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Scheduling stop tasks for {}", Logger.getGuildNameAndId(guild));
 		String guildId = guild.getId();
 		ScheduledFuture<?> stopTask = Main.scheduledPool.schedule(Main.safeRunnable(() -> stopTasks(guild)), 30, TimeUnit.SECONDS);
 		stopTasks.put(guildId, stopTask);
 	}
 
 	private void stopTasks(@NotNull Guild guild) {
-		Logger.debug(getLogger(), "Stopping tasks for {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Stopping tasks for {}", Logger.getGuildNameAndId(guild));
 		String guildId = guild.getId();
 		Map<Class<? extends ScheduledTask>, ScheduledFuture<?>> tasks = runningTasks.remove(guildId);
 

@@ -72,7 +72,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 		String btnId = e.getButton().getId();
 		if(!btnId.startsWith("come_") || e.getUser().isBot()) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
-		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
+		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
 
 		Main.pool.execute(() -> {
 			ReplyOperation o = new ReplyOperation(e);
@@ -95,9 +95,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 				"Iedereen krijgt een ping om te komen, en in " + Channels.MAIN.getAsMention(guild) + " verschijnt een bericht waarop ze kunnen aangeven of ze erbij zijn. " +
 				"Dit bericht blijft `" + COME_COOLDOWN_HOURS + "` uur actief, waarin iedereen kan reageren. Tijdens deze periode kan het command niet opnieuw gebruikt worden.");
 
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 
 	class GuildComeManager {

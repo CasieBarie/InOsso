@@ -19,8 +19,6 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.RejectedExecutionException;
-
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class JoinManager extends ListenerAdapter {
@@ -28,22 +26,19 @@ public class JoinManager extends ListenerAdapter {
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
-		Main.pool.execute(() -> {
-			try {
-				Guild guild = e.getGuild();
-				User user = e.getUser();
-				User.Profile profile = user.retrieveProfile().complete();
-				checkRoles(guild);
-				TextChannel channel = Channels.MAIN.getAsChannel(guild);
+		Main.pool.execute(Main.safeRunnable(() -> {
+			Guild guild = e.getGuild();
+			User user = e.getUser();
+			User.Profile profile = user.retrieveProfile().complete();
+			checkRoles(guild);
+			TextChannel channel = Channels.MAIN.getAsChannel(guild);
 
-				EmbedBuilder eb = new EmbedBuilder()
-					.setDescription("# :wave: Welkom :wave:\n## " + user.getAsMention())
-					.setThumbnail("attachment://avatar.png")
-					.setColor(profile.getAccentColor());
-				channel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadAvatar(user.getEffectiveAvatarUrl())).queue(null, ReplyOperation::error);
-			} catch(RejectedExecutionException ignored) {/*IGNORED*/
-			} catch(Exception ex) {getLogger().error(ex.getMessage(), ex);}
-		});
+			EmbedBuilder eb = new EmbedBuilder()
+				.setDescription("# :wave: Welkom :wave:\n## " + user.getAsMention())
+				.setThumbnail("attachment://avatar.png")
+				.setColor(profile.getAccentColor());
+			channel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadAvatar(user.getEffectiveAvatarUrl())).queue(null, ReplyOperation::error);
+		}));
 	}
 
 	@Override

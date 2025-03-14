@@ -45,7 +45,7 @@ public class CommandManager extends ListenerAdapter {
 	@Override
 	public void onGenericCommandInteraction(@NotNull GenericCommandInteractionEvent e) {
 		User user = e.getUser();
-		Logger.debug(getLogger(), "Received command {} from {}", () -> new String[] {e.getCommandString(), Logger.getUserNameAndId(user)});
+		getLogger().debug("Received command {} from {}", e.getCommandString(), Logger.getUserNameAndId(user));
 		if(user.isBot()) {return;}
 		ReplyOperation o = new ReplyOperation(e);
 		if(!e.isFromGuild()) {o.sendNotAllowed("Je kan alleen commands gebruiken in de InOsso server."); return;}

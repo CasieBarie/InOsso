@@ -77,9 +77,7 @@ public class Choose implements Information {
 			);
 
 		if(random.nextInt(10) == 5) {eb.setFooter("Er is een manier om de uitkomst te beïnvloeden. Hoe dat precies werkt, mag je zelf uitzoeken!");}
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 
 	class Context implements CommandListener {

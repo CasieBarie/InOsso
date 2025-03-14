@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -73,7 +73,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 		String id = e.getButton().getId();
 		if(!id.startsWith("jachtseizoen-")) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
-		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
+		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
 
 		Main.pool.execute(() -> {
 			Guild guild = e.getGuild();
@@ -116,13 +116,11 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 				"\n\nVeel plezier met spelen!"
 			);
 
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 
 	public void stopPlaying(Guild guild, boolean isCancel) {
-		Logger.debug(getLogger(), "Stopping jachtseizoen game in guild {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Stopping jachtseizoen game in guild {}", Logger.getGuildNameAndId(guild));
 		GuildManager manager = managers.remove(guild.getId());
 		if(manager == null) {return;}
 		if(!isCancel) {manager.stopPlaying(guild);}

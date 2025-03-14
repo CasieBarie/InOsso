@@ -55,7 +55,7 @@ public class WebhookManager extends ListenerAdapter {
 		try {
 			Webhook webhook = channel.createWebhook("InOsso-" + name).setAvatar(Icon.from(is)).complete();
 			webhooks.put(channel.getId() + "|" + webhook.getName(), webhook);
-			Logger.debug(getLogger(), "Created webhook {} in {}", () -> new String[] {Logger.getWebhookNameAndId(webhook), Logger.getGuildNameAndId(webhook.getGuild())});
+			getLogger().debug("Created webhook {} in {}", Logger.getWebhookNameAndId(webhook), Logger.getGuildNameAndId(webhook.getGuild()));
 			return webhook;
 		} catch(ErrorResponseException ignored) {return null;
 		} catch(Exception ex) {getLogger().error("Failed to create webhook", ex); return null;}

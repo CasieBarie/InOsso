@@ -60,7 +60,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		Guild guild = e.getGuild();
 		ReplyOperation o = new ReplyOperation(e);
 		GuildMusicManager manager = PlayerManager.getInstance(music).getGuildMusicManager(guild);
-		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
+		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
 		e.deferReply(true).queue(null, ReplyOperation::error);
 
 		Main.pool.execute(() -> {
@@ -84,7 +84,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		TextChannel channel = Channels.MUSIC.getAsChannel(sender.getGuild());
 
 		if(!e.getGuildChannel().equals(channel)) {return;}
-		Logger.debug(getLogger(), "Music search message received by {}", () -> new String[] {Logger.getUserNameAndId(sender.getUser())});
+		getLogger().debug("Music search message received by {}", Logger.getUserNameAndId(sender.getUser()));
 		e.getMessage().delete().queue(null, ReplyOperation::error);
 
 		Main.pool.execute(() -> new Search(music, sender, e.getMessage().getContentRaw()));

@@ -47,7 +47,7 @@ public class Search {
 	ReplyOperation o;
 	static final String WEBHOOK_ID = "Search", NOMUSIC_PATH = "geenmuziekjes.png";
 	List<AudioTrack> options = new ArrayList<>();
-	public Search(Music music, Member searcher, String query) {
+	public Search(Music music, @NotNull Member searcher, String query) {
 		this.music = music;
 		this.searcher = searcher;
 		this.query = query;
@@ -165,7 +165,7 @@ public class Search {
 		.build();
 	}
 
-	private @NotNull MessageEmbed trackAddedEmbed(AudioTrack track) {
+	private @NotNull MessageEmbed trackAddedEmbed(@NotNull AudioTrack track) {
 		return new EmbedBuilder()
 			.setColor(Color.GREEN)
 			.setImage(EMPTY_IMAGE)
@@ -178,7 +178,7 @@ public class Search {
 		.build();
 	}
 
-	private @NotNull MessageEmbed playlistAddedEmbed(AudioPlaylist playlist, int count) {
+	private @NotNull MessageEmbed playlistAddedEmbed(@NotNull AudioPlaylist playlist, int count) {
 		return new EmbedBuilder()
 			.setColor(Color.GREEN)
 			.setImage(EMPTY_IMAGE)
@@ -207,7 +207,7 @@ public class Search {
 	private @NotNull MessageEmbed loadFailedEmbed() {
 		return getNoMusicEmbedBuilder().setDescription("# :warning: Er is iets fout gegaan!" +
 			"\n`" + Utils.truncate(query, 300) + "` heeft een error veroorzaakt!" +
-			"\n\nVraag aan " + Utils.getCas(guild).getAsMention() + " om in de console te kijken." +
+			"\n\nVraag aan " + Utils.getAsMention(Utils.getCasAsMember(guild)) + " om in de console te kijken." +
 			"\n\n*Gezocht door " + Utils.getAsMention(searcher) + "*")
 		.build();
 	}

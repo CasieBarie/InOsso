@@ -58,7 +58,7 @@ public class QueueViewer {
 			finalString = header + builder + line;
 
 		byte[] fileContent = finalString.getBytes(StandardCharsets.UTF_8);
-		Logger.debug(getLogger(), "Queue created for guild {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Queue created for guild {}", Logger.getGuildNameAndId(guild));
 		return FileUpload.fromData(fileContent, "Wachtrij.txt");
 	}
 }

@@ -46,7 +46,7 @@ public class Controller {
 	public Controller(Music music, String guildId) {
 		this.music = music;
 		this.guildId = guildId;
-		Logger.debug(getLogger(), "Controller instance created for guild {}", () -> new String[] {Logger.getGuildNameAndId(jda().getGuildById(guildId))});
+		getLogger().debug("Controller instance created for guild {}", Logger.getGuildNameAndId(jda().getGuildById(guildId)));
 	}
 
 	public void updateMessage() {
@@ -138,26 +138,20 @@ public class Controller {
 		Message message = channel.getHistoryFromBeginning(3).complete().getRetrievedHistory().stream()
 			.filter(Message::isWebhookMessage)
 			.filter(m -> m.getButtonById("music_pause") != null).findFirst().orElse(null);
-		if(message == null) {setupController(null); return;}
+		if(message == null) {setupController(); return;}
 		initializing = false;
 		controllerId = message.getId();
 		notFound = false;
 	}
 
-	public void setupController(ReplyOperation o) {
+	private void setupController() {
 		Guild guild = jda().getGuildById(guildId);
 		String webhookName = jda().getGuildById(guildId).getSelfMember().getEffectiveName() + " -  Muziekjes🎺";
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
 		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
-		if(o == null) {o = new ReplyOperation(webhook, webhookName);}
-		if(webhook == null) {o.sendFailed("Ik kan op dit moment geen nieuwe controller sturen."); return;}
 
-		List<Message> messages = new ArrayList<>();
-		ReplyOperation finalO = o;
-		channel.getIterableHistory().forEachAsync(msg -> {
-			messages.add(msg);
-			return messages.size() < 10;
-		}).thenRun(() -> channel.purgeMessages(messages)).whenComplete((success, error) -> {
+		channel.getIterableHistory().takeAsync(10).thenApply(channel::purgeMessages).whenComplete((success, error) -> {
+			if(error != null) {ReplyOperation.error(error);}
 			currentEmbed = musicController();
 			currentActionRows = getActionRows();
 			webhook.sendMessageEmbeds(currentEmbed)
@@ -168,9 +162,8 @@ public class Controller {
 				controllerId = msg.getId();
 				notFound = false;
 				initializing = false;
-				finalO.sendSuccess("Muziek controller is gemaakt!");
 				getLogger().info("A new music controller has been created");
-			}, finalO::sendFailed);
+			}, ReplyOperation::error);
 		});
 	}
 }

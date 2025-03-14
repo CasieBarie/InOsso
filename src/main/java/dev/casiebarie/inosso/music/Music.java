@@ -38,14 +38,14 @@ public class Music implements Information {
 		Controller controller = controllers.get(guild.getId());
 		controller.isConnected = true;
 		if(!guild.getAudioManager().isConnected()) {
-			Logger.debug(getLogger(), "Connecting to guild {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+			getLogger().debug("Connecting to guild {}", Logger.getGuildNameAndId(guild));
 			guild.getAudioManager().openAudioConnection(Channels.VOICE.getAsChannel(guild));
 			controller.manager.scheduler.playStartupSound(guild);
 		}
 	}
 
 	protected void stopMusic(Guild guild, boolean isButton) {
-		Logger.debug(getLogger(), "Stopping music in guild {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Stopping music in guild {}", Logger.getGuildNameAndId(guild));
 		Controller controller = controllers.get(guild.getId());
 		controller.manager.player.stopTrack();
 
@@ -94,7 +94,7 @@ public class Music implements Information {
 	}
 
 	public void playJachtseizoen(Guild guild) {
-		Logger.debug(getLogger(), "Playing Jachtseizoen sound in {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Playing Jachtseizoen sound in {}", Logger.getGuildNameAndId(guild));
 		PlayerManager.getInstance(this).getGuildMusicManager(guild).scheduler.playUnSkippableTrack(
 			new AudioTrackInfo(":rotating_light: Jachtseizoen :rotating_light:", "De jacht in GTA is geopend!", 46000L, "jachtseizoen.mp3", false, "internal"),
 			"audio/jachtseizoen.mp3",
@@ -103,7 +103,7 @@ public class Music implements Information {
 	}
 
 	public void playCall(Guild guild, @NotNull TextChannel channel) {
-		Logger.debug(getLogger(), "Playing call sound in {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Playing call sound in {}", Logger.getGuildNameAndId(guild));
 		PlayerManager.getInstance(this).getGuildMusicManager(guild).scheduler.playUnSkippableTrack(
 			new AudioTrackInfo(":pray: Iemand wil meedoen! :pray:", "Kijk in " + channel.getAsMention() + "!", 65000L, "call.mp3", false, "internal"),
 			"audio/call.mp3",
@@ -112,7 +112,7 @@ public class Music implements Information {
 	}
 
 	public void stopLooping(Guild guild) {
-		Logger.debug(getLogger(), "Stopping looping sound in {}", () -> new String[] {Logger.getGuildNameAndId(guild)});
+		getLogger().debug("Stopping looping sound in {}", Logger.getGuildNameAndId(guild));
 		PlayerManager.getInstance(this).getGuildMusicManager(guild).scheduler.stopLoopingTrack();
 	}
 

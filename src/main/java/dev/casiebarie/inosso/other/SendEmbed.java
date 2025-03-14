@@ -133,9 +133,6 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 				"Wil je een embed maken? Gebruik dan bijvoorbeeld [deze site](https://message.style/app/editor). " +
 				"Kopieer de JSON-code en voeg deze toe aan het commando. Is de code te lang? Dan kun je het ook als een `.json` of `.txt` bestand sturen." +
 				"\n\nEen gewoon bericht wordt direct verstuurd. Bij een embed toont de bot eerst een voorbeeld en vraagt of je het wilt verzenden.");
-
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 }

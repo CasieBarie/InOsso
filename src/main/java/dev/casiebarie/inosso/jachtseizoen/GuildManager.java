@@ -166,7 +166,7 @@ public class GuildManager {
 	private void sendLook(Guild guild, boolean isFirst) {
 		VoiceChannel voice = Channels.VOICE.getAsChannel(guild);
 		Webhook webhook = WebhookManager.getWebhook(voice, "Jachtseizoen");
-		Logger.debug(getLogger(), "Sending look to {}", () -> new String[] {Logger.getWebhookNameAndId(webhook)});
+		getLogger().debug("Sending look to {}", Logger.getWebhookNameAndId(webhook));
 
 		MessageEmbed embed = new EmbedBuilder()
 			.setColor(Color.decode("#79cfff"))

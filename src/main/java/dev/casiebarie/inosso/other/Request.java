@@ -59,7 +59,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
 		if(!e.getComponentId().startsWith("request_")) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
-		Logger.debug(getLogger(), "ButtonInteraction with ID {} by {}", () -> new String[] {e.getComponentId(), Logger.getUserNameAndId(e.getUser())});
+		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
 
 		Main.pool.execute(() -> {
 			switch(e.getComponentId().split("_")[1].split("-")[0]) {
@@ -73,7 +73,6 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 	@Override
 	public void sendInformation(@NotNull ReplyOperation o) {
 		Guild guild = o.e.getGuild();
-
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.RED)
 			.setImage(EMPTY_IMAGE)
@@ -85,10 +84,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				"Hierop kun je reageren om te bepalen of diegene mee mag doen. Gasten moeten `" + REQUEST_COOLDOWN_HOURS + "` uur wachten voordat ze opnieuw een request kunnen sturen." +
 				"\n### :wrench: | Gast Command" +
 				"\nGasten kunnen ook handmatig toegevoegd of verwijderd worden met het `/gast` command.");
-
-		o.e.getHook().sendMessageEmbeds(eb.build())
-			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(null, o::sendFailed);
+		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 
 	private void sendRequest(@NotNull ButtonInteractionEvent e) {
@@ -196,9 +192,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			initializing = true;
 			shouldUpdate = true;
 			TextChannel channel = Channels.REQUEST.getAsChannel(guild);
-
-			Message message = channel.getHistoryFromBeginning(3).complete().getRetrievedHistory().stream()
-				.filter(Message::isWebhookMessage).findFirst().orElse(null);
+			Message message = channel.getHistoryFromBeginning(3).complete().getRetrievedHistory().stream().filter(Message::isWebhookMessage).findFirst().orElse(null);
 
 			if(message == null) {setupMessage(guild); return;}
 			messageId = message.getId();
@@ -206,7 +200,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			initializing = false;
 		}
 
-		private @NotNull MessageEmbed requestEmbed(List<Member> onlineMembers) {
+		private @NotNull MessageEmbed requestEmbed(@NotNull List<Member> onlineMembers) {
 			StringBuilder desc = new StringBuilder("# :pray: Request :pray:" +
 				"\nJe hebt op dit moment geen toegang. Druk op de knop hieronder om te vragen of je mag meedoen. Dit kan alleen als er iemand online is!" +
 				"\n\n**Nu online: (" + onlineMembers.size() + ")**");
@@ -228,11 +222,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
 			onlineMembers.remove(guild.getSelfMember());
 
-			List<Message> messages = new ArrayList<>();
-			channel.getIterableHistory().forEachAsync(msg -> {
-				messages.add(msg);
-				return messages.size() < 10;
-			}).thenRun(() -> channel.purgeMessages(messages)).whenComplete((success, error) ->
+			channel.getIterableHistory().takeAsync(10).thenApply(channel::purgeMessages).whenComplete((success, error) ->
 			webhook.sendMessageEmbeds(requestEmbed(onlineMembers))
 				.setUsername(webhookName)
 				.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))

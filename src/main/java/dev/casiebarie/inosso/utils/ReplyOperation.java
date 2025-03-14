@@ -56,7 +56,7 @@ public class ReplyOperation {
 		if(e == null) {return;}
 		if(!e.isAcknowledged()) {e.deferReply(true).queue(null, ReplyOperation::error);}
 		e.getHook().deleteOriginal().queue(null, ReplyOperation::error);
-		Logger.debug(getLogger(), "Replied empty to {}", () -> new String[] {Logger.getUserNameAndId(e.getUser())});
+		getLogger().debug("Replied empty to {}", Logger.getUserNameAndId(e.getUser()));
 	}
 
 	public void sendSuccess(String msg) {
@@ -106,7 +106,7 @@ public class ReplyOperation {
 		channel.sendMessageEmbeds(embed).queue(message -> deleteAfterSeconds(message, deleteAfterSeconds), ReplyOperation::error);
 	}
 
-	private void deleteAfterSeconds(Message message, int deleteAfterSeconds) {
+	private void deleteAfterSeconds(@NotNull Message message, int deleteAfterSeconds) {
 		messageId = message.getId();
 		if(deleteAfterSeconds <= 0 || message.getChannelType() == ChannelType.PRIVATE) {return;}
 		message.delete().queueAfter(deleteAfterSeconds, TimeUnit.SECONDS, null, ReplyOperation::error);

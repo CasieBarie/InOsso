@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class Logger {
 	public Logger() {setFilters();}
@@ -44,7 +43,6 @@ public class Logger {
 		}
 	}
 
-	public static void debug(org.slf4j.@NotNull Logger logger, String message, Supplier<Object[]> argsSupplier) {if(logger.isDebugEnabled()) {logger.debug(message, argsSupplier.get());}}
 	public static @NotNull String getGuildNameAndId(@NotNull Guild guild) {return guild.getName() + "(" + guild.getId() + ")";}
 	public static @NotNull String getUserNameAndId(@NotNull User user) {return user.getName() + "(" + user.getId() + ")";}
 	public static @NotNull String getWebhookNameAndId(@NotNull Webhook webhook) {return webhook.getName() + "(" + webhook.getId() + ")";}
