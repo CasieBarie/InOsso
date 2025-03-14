@@ -2,21 +2,25 @@ package dev.casiebarie.inosso.utils;
 
 import dev.casiebarie.inosso.ClassLoader;
 import dev.casiebarie.inosso.Main;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static dev.casiebarie.inosso.Main.safeRunnable;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
+import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class DependencyChecker extends ListenerAdapter {
@@ -33,7 +37,8 @@ public class DependencyChecker extends ListenerAdapter {
 			if(!key.toString().endsWith(".version")) {return;}
 			String dependency = key.toString().replace(".version", "");
 			checkLatestVersion(dependency, value.toString());
-		}); getLogger().debug("Checking dependencies complete");
+		}); sendToCas();
+		getLogger().debug("Checking dependencies complete");
 	}
 
 	private void checkLatestVersion(String dependency, String currentVersion) {
@@ -69,5 +74,27 @@ public class DependencyChecker extends ListenerAdapter {
 			if(latestVersion == null || latestVersion.contains("beta") || latestVersion.contains("SNAPSHOT") || latestVersion.contains("alpha")) {return null;}
 			return latestVersion;
 		}
+	}
+
+	private void sendToCas() {
+		List<MessageEmbed> embeds = new ArrayList<>();
+		versionMap.forEach((k, v) -> {
+			if(v[1] == null || v[0].equals(v[1])) {return;}
+			embeds.add(
+				new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setImage(EMPTY_IMAGE)
+					.setDescription("# Dependency update!" +
+						"\n### `" + k + "`" +
+						"\ncan be updated from `" + v[0] + "` to `" + v[1] + "`!")
+				.build()
+			);
+		});
+
+		PrivateChannel channel = Utils.getCasAsUser().openPrivateChannel().complete();
+		channel.getIterableHistory().takeAsync(1000).thenApply(channel::purgeMessages).whenComplete((success, error) -> {
+			if(embeds.isEmpty()) {return;}
+			channel.sendMessageEmbeds(embeds).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, ReplyOperation::error);
+		});
 	}
 }

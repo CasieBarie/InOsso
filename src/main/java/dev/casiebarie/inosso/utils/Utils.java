@@ -5,6 +5,7 @@ import dev.casiebarie.inosso.enums.Roles;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -20,6 +21,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.Main.jda;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Utils {
@@ -43,7 +45,8 @@ public class Utils {
 		return true;
 	}
 
-	public static Member getCasAsMember(@NotNull Guild guild) {return guild.getMemberById(515179486329962502L);}
+	public static User getCasAsUser() {return jda().getUserById(515179486329962502L);}
+	public static Member getCasAsMember(@NotNull Guild guild) {return guild.getMember(getCasAsUser());}
 	public static IMentionable getCas(Guild guild) {
 		Member cas = getCasAsMember(guild);
 		if(isSpecial(cas)) {return cas.getRoles().get(0);
