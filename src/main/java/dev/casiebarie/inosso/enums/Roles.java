@@ -10,6 +10,6 @@ public enum Roles {
 
 	private final Long mainID, testID;
 	Roles(Long mainID, Long testID) {this.mainID = mainID; this.testID = testID;}
-	public Role getGuildRole(@NotNull Guild guild) {return guild.getRoleById((guild.getIdLong() == 840529735599259648L) ? mainID : testID);}
+	public Role getGuildRole(@NotNull Guild guild) {return guild.getRoleById((guild.getIdLong() == 844304271649538058L) ? mainID : testID);}
 	public @NotNull String getAsMention(Guild guild) {return getGuildRole(guild).getAsMention();}
 }

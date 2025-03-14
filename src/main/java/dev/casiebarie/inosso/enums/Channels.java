@@ -16,7 +16,7 @@ public enum Channels {
 	private final Long mainId, testId;
 	private final Class<? extends StandardGuildChannel> channelType;
 	<G extends StandardGuildChannel> Channels(Long mainId, Long testId, Class<G> channelType) {this.mainId = mainId; this.testId = testId; this.channelType = channelType;}
-	public Long getId(@NotNull Guild guild) {return (guild.getIdLong() == 840529735599259648L) ? mainId : testId;}
+	public Long getId(@NotNull Guild guild) {return (guild.getIdLong() == 844304271649538058L) ? mainId : testId;}
 	public @NotNull String getAsMention(@NotNull Guild guild) {return guild.getGuildChannelById(getId(guild)).getAsMention();}
 	@SuppressWarnings("unchecked") public <G extends StandardGuildChannel> G getAsChannel(@NotNull Guild guild) {return (G) guild.getChannelById(channelType, getId(guild));}
 }
