@@ -6,6 +6,9 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.1.1 - Guild IDs
+- **Fix** | Updated the guild IDs to the correct ones.
+
 ### v1.1.0 - Removed YouTube support
 - **Removed** | Support to play YouTube links.
 - **Changed** | Music will now be searched on SoundCloud instead of YouTube.
