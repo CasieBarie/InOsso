@@ -6,6 +6,14 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.1.0 - Removed YouTube support
+- **Removed** | Support to play YouTube links.
+- **Changed** | Music will now be searched on SoundCloud instead of YouTube.
+- **Added** | Request button will now be disabled when nobody is in the call.
+- **Added** | The dependency checker will now send updates to CasieBarie privately.
+- **Removed** | The `/setup` command.
+- **Other** | Code cleanup.
+
 ### v1.0.1 - Bugfixes
 - **Fix** | Music formatting.
 - **Fix** | Audio url filtering not working properly.
