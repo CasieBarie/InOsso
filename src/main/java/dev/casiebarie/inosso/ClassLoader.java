@@ -35,6 +35,7 @@ public class ClassLoader {
 	public final Choose choose = new Choose(this);
 	public final Jachtseizoen jachtseizoen = new Jachtseizoen(this);
 
+	public final Changelog changelog = new Changelog(this);
 	public final Clips clips = new Clips(this);
 	public final Come come = new Come(this);
 	public final Guest guest = new Guest(this);
