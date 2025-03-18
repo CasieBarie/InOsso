@@ -6,7 +6,13 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
-### v.1.2.0 - View changelog
+### v1.2.1 - Bugfixes
+- **Fix** | Dependency update message now only refreshes when there are updates.
+- **Fix** | Spaces in webhook names.
+- **Fix** | Controller message still referring to YouTube instead of SoundCloud.
+- **Fix** | Automatic role rename no doesn't change the bot role.
+
+### v1.2.0 - View changelog
 - **Added** | The `/help changelog` command to view the changelog of InOsso.
 - **Fix** | SoundCloud GO+ tracks no longer play a 30-second preview and are now filtered.
 - **Fix** | Track queue not working properly.
