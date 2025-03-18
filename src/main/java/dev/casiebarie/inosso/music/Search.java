@@ -90,7 +90,8 @@ public class Search {
 	private void audioTrackLoaded(@NotNull AudioTrack track) {
 		getLogger().debug("Track loaded: {}", track.getInfo().title);
 		music.connect(guild);
-		if(!guildManager.scheduler.queueTrack(track, searcher.getId())) {editMessage(queueFullEmbed(), NOMUSIC_PATH);}
+		if(Utils.isSoundCloudGoPlus(track)) {editMessage(noMatchesEmbed(), NOMUSIC_PATH); return;}
+		if(!guildManager.scheduler.queueTrack(track, searcher.getId())) {editMessage(queueFullEmbed(), NOMUSIC_PATH); return;}
 		editMessage(trackAddedEmbed(track), type == 0 ? "soundcloud.png" : "web.png");
 	}
 
@@ -99,6 +100,7 @@ public class Search {
 		getLogger().debug("Playlist loaded: {}", playlist.getName());
 		music.connect(guild);
 		int count = guildManager.scheduler.queueAll(playlist, searcher.getId());
+		if(count == -1) {editMessage(noMatchesEmbed(), NOMUSIC_PATH); return;}
 		if(count == 0) {editMessage(queueFullEmbed(), NOMUSIC_PATH); return;}
 		editMessage(playlistAddedEmbed(playlist, count), "web.png");
 	}

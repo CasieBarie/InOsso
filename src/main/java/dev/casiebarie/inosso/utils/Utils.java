@@ -1,5 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.enums.Roles;
 import net.dv8tion.jda.api.entities.Guild;
@@ -98,6 +99,8 @@ public class Utils {
 			return dotIndex == -1 || !extensions.contains(path.substring(dotIndex + 1)) ? 2 : 1;
 		} catch(MalformedURLException ex) {return 0;}
 	}
+
+	public static boolean isSoundCloudGoPlus(@NotNull AudioTrack track) {return track.getInfo().identifier.endsWith("/preview/hls");}
 
 	public static @NotNull Properties getProperties() {
 		Properties properties  = new Properties();

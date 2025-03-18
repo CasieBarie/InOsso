@@ -83,12 +83,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		int count = 0;
 		for(AudioTrack track : playlist.getTracks()) {
 			track.setUserData(adder);
+			if(Utils.isSoundCloudGoPlus(track)) {continue;}
 			if(player.getPlayingTrack() == null) {player.playTrack(track);
 			} else {
-				if(queue.size() >= MAX_QUEUE_SIZE) {break;}
+				if(queue.size() >= MAX_QUEUE_SIZE) {return count;}
 				queue.offer(track);
 			} count++;
-		} return count;
+		} return count == 0 ? -1 : count;
 	}
 
 	public void nextTrack(boolean force) {
