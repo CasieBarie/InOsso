@@ -27,6 +27,7 @@ public class RoleNameManager extends ListenerAdapter {
 	}
 
 	private void changeRoleName(@NotNull Member member) {
+		if(member.getGuild().getSelfMember().equals(member)) {return;}
 		String roleName = member.getEffectiveName();
 		Role role = member.getRoles().get(0);
 		String oldRoleName = role.getName();
