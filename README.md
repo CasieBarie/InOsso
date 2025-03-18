@@ -6,6 +6,11 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v.1.2.0 - View changelog
+- **Added** | The `/help changelog` command to view the changelog of InOsso.
+- **Fix** | SoundCloud GO+ tracks no longer play a 30-second preview and are now filtered.
+- **Fix** | Track queue not working properly.
+
 ### v1.1.2 - Cleanup
 - **Other** | Code cleanup.
 - **Ohter** | pom.xml cleanup.
