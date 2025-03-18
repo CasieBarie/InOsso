@@ -72,19 +72,22 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	public boolean queueTrack(@NotNull AudioTrack track, String adder) {
 		track.setUserData(adder);
-		if(!player.startTrack(track, true)) {return true;}
-		if(queue.size() >= MAX_QUEUE_SIZE) {return false;}
-		return queue.offer(track);
+		if(player.getPlayingTrack() == null) {player.playTrack(track);
+		} else {
+			if(queue.size() >= MAX_QUEUE_SIZE) {return false;}
+			queue.offer(track);
+		} return true;
 	}
 
 	public int queueAll(@NotNull AudioPlaylist playlist, String adder) {
 		int count = 0;
 		for(AudioTrack track : playlist.getTracks()) {
 			track.setUserData(adder);
-			if(!player.startTrack(track, true)) {count++; continue;}
-			if(queue.size() >= MAX_QUEUE_SIZE) {break;}
-			queue.offer(track);
-			count++;
+			if(player.getPlayingTrack() == null) {player.playTrack(track);
+			} else {
+				if(queue.size() >= MAX_QUEUE_SIZE) {break;}
+				queue.offer(track);
+			} count++;
 		} return count;
 	}
 
