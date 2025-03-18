@@ -3,13 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.casiebarie</groupId>
     <artifactId>InOsso</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-INDEV</version>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <outputFilePath>${project.build.directory}/inosso-bot.jar</outputFilePath>
 
         <version.jda>5.3.0</version.jda>
         <version.lavaplayer>2.2.3</version.lavaplayer>
@@ -115,7 +116,6 @@
                                 <exclude>META-INF/*.module-info</exclude>
                                 <exclude>META-INF/NOTICE.txt</exclude>
                                 <exclude>META-INF/DEPENDENCIES</exclude>
-                                <exclude>yts-version.txt</exclude>
                                 <exclude>META-INF/versions/9/module-info</exclude>
                                 <exclude>META-INF/versions/9/*</exclude>
                             </excludes>
@@ -135,29 +135,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <outputFilePath>${project.build.directory}/inosso-bot.jar</outputFilePath>
-            </properties>
-        </profile>
-        <profile>
-            <id>testing</id>
-            <properties>
-                <outputFilePath>${user.outputFile}Discord\InOsso - Bot\${project.artifactId}.jar</outputFilePath>
-            </properties>
-        </profile>
-    </profiles>
 </project>

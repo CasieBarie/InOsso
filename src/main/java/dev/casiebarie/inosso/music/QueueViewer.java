@@ -7,7 +7,6 @@ import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +24,9 @@ public class QueueViewer {
 		GuildMusicManager manager = PlayerManager.getInstance(music).getGuildMusicManager(guild);
 		Queue<AudioTrack> queue = manager.scheduler.queue;
 		if(queue.isEmpty()) {o.sendFailed(ACTION_CANCELLED_MSG); return;}
-		e.getHook().editOriginal("_De wachtrij wordt mogelijk niet goed weergegeven op mobiele apparaten._")
-			.setEmbeds(new MessageEmbed[0])
+		e.getHook().sendMessage("_De wachtrij wordt mogelijk niet goed weergegeven op mobiele apparaten._")
 			.setFiles(createQueue(queue, guild))
-		.queue(success -> {}, o::sendFailed);
+		.queue(null, o::sendFailed);
 	}
 
 	private @NotNull FileUpload createQueue(@NotNull Queue<AudioTrack> queue, Guild guild) {
