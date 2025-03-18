@@ -6,6 +6,10 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.1.2 - Cleanup
+- **Other** | Code cleanup.
+- **Ohter** | pom.xml cleanup.
+
 ### v1.1.1 - Guild IDs
 - **Fix** | Updated the guild IDs to the correct ones.
 
