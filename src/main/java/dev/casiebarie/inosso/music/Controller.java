@@ -146,7 +146,7 @@ public class Controller {
 
 	private void setupController() {
 		Guild guild = jda().getGuildById(guildId);
-		String webhookName = jda().getGuildById(guildId).getSelfMember().getEffectiveName() + " -  Muziekjes🎺";
+		String webhookName = jda().getGuildById(guildId).getSelfMember().getEffectiveName() + " | Muziekjes🎺";
 		TextChannel channel = Channels.MUSIC.getAsChannel(guild);
 		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 

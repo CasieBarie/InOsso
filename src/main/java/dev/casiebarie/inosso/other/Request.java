@@ -105,7 +105,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 		if(webhook == null) {return;}
 		webhook.sendMessageEmbeds(requestingEmbed(requester))
-			.setUsername(guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪")
+			.setUsername(guild.getSelfMember().getEffectiveName() + " | Poortwachter🚪")
 			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(requester.getEffectiveAvatarUrl()))
 			.setActionRow(
 				Button.success("request_approve-" + requester.getId(), "Ja"),

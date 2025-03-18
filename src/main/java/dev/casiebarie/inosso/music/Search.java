@@ -55,7 +55,7 @@ public class Search {
 		channel = Channels.MUSIC.getAsChannel(guild);
 		manager = PlayerManager.getInstance(music);
 		guildManager = manager.getGuildMusicManager(guild);
-		webhookName = guild.getSelfMember().getEffectiveName() + " |  Muziek Zoeker🔎";
+		webhookName = guild.getSelfMember().getEffectiveName() + " | Muziek Zoeker🔎";
 		search();
 	}
 

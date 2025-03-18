@@ -47,7 +47,7 @@ public class GuildManager {
 
 		Webhook webhook = WebhookManager.getWebhook(channel, webhookId);
 		if(webhook == null) {o.sendFailed("Kan jachtseizoen bericht niet versturen!"); return;}
-		webhookName = guild.getSelfMember().getEffectiveName() + " -  Jachtseizoen👮";
+		webhookName = guild.getSelfMember().getEffectiveName() + " | Jachtseizoen👮";
 
 		webhook.sendMessageEmbeds(currentRules)
 			.setUsername(webhookName)
