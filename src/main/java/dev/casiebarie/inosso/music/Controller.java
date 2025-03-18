@@ -92,7 +92,7 @@ public class Controller {
 
 		return new EmbedBuilder()
 			.setDescription("# Muziekjes :trumpet:" +
-				"\nStuur een bericht met de titel of URL van een nummer/afspeellijst om muziek toe te voegen aan de wachtrij. Als je een titel stuurt, wordt er automatisch gezocht op YouTube naar een geschikte versie." +
+				"\nStuur een bericht met de titel of URL van een nummer/afspeellijst om muziek toe te voegen aan de wachtrij. Als je een titel stuurt, wordt er automatisch gezocht op SoundCloud naar een geschikte versie." +
 				"\n### Nu aan het spelen:" + paused + nowPlaying + overridenPlaying +
 				"\n### Volgende:" + getNextTracks())
 			.setColor(Color.CYAN)
