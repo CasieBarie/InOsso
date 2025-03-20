@@ -24,7 +24,7 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class DependencyChecker extends ListenerAdapter {
-	int lastSize = -1;
+	Map<String, String[]> lastMap = new LinkedHashMap<>();
 	protected static final Map<String, String[]> versionMap = new LinkedHashMap<>();
 	public DependencyChecker(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
 
@@ -92,8 +92,8 @@ public class DependencyChecker extends ListenerAdapter {
 			);
 		});
 
-		if(lastSize == embeds.size()) {return;}
-		lastSize = embeds.size();
+		if(lastMap.size() == versionMap.size() && lastMap.entrySet().stream().allMatch(e -> Arrays.deepEquals(e.getValue(), versionMap.get(e.getKey())))) {return;}
+		lastMap = versionMap;
 
 		PrivateChannel channel = Utils.getCasAsUser().openPrivateChannel().complete();
 		channel.getIterableHistory().takeAsync(1000).thenApply(channel::purgeMessages).whenComplete((success, error) -> {
