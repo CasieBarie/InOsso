@@ -45,7 +45,7 @@ public class DependencyChecker extends ListenerAdapter {
 	private void checkLatestVersion(String dependency, String currentVersion) {
 		String latestVersion = null;
 		try {latestVersion = getLatestVersion(dependency);
-		} catch(Exception ex) {getLogger().warn("Failed to check version for {}: {}", dependency, ex.getMessage());}
+		} catch(Exception ex) {getLogger().debug("Failed to check version for {}: {}", dependency, ex.getMessage());}
 
 		dependency = dependency.replace("_", ".");
 		versionMap.put(dependency, new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion});
@@ -62,7 +62,7 @@ public class DependencyChecker extends ListenerAdapter {
 		connection.setReadTimeout(5000);
 
 		int responseCode = connection.getResponseCode();
-		if(responseCode != 200) {getLogger().warn("Failed to fetch data from {}. HTTP response: {}", url, responseCode); return null;}
+		if(responseCode != 200) {getLogger().debug("Failed to fetch data from {}. HTTP response: {}", url, responseCode); return null;}
 
 		try(Scanner scanner = new Scanner(connection.getInputStream())) {
 			String response = scanner.useDelimiter("\\A").next();
