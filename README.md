@@ -6,6 +6,12 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.2.2 - Dependency updates & Bugfixes
+- **Dependency** | Updated `net.dv8tion_jda` from `5.3.0` to `5.3.1`.
+- **Dependency** | Updated `ch.qos.logback_logback-classic` from `1.5.17` to `1.5.18`.
+- **Fix** | Replace size check in the dependency checker with a deep comparison of map entries.
+- **Fix** | Changed dependency checker log level for warnings to debug.
+
 ### v1.2.1 - Bugfixes
 - **Fix** | Dependency update message now only refreshes when there are updates.
 - **Fix** | Spaces in webhook names.
