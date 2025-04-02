@@ -13,6 +13,7 @@ import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,6 +56,9 @@ public class Music implements Information {
 		guild.getAudioManager().closeAudioConnection();
 		controller.isConnected = false;
 		controller.forceUpdate = true;
+
+		PrivateChannel channel = Utils.getCasAltAsUser().openPrivateChannel().complete();
+		channel.getIterableHistory().takeAsync(1000).thenApply(channel::purgeMessages).join();
 
 		((TextChannel) Channels.MUSIC.getAsChannel(guild))
 			.sendMessageEmbeds(new EmbedBuilder()
@@ -126,13 +130,13 @@ public class Music implements Information {
 			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://muziekjes.png")
 			.setDescription("# :trumpet: Muziekjes Help :trumpet:\n" +
-				"Muziek afspelen is heel eenvoudig! Stuur een bericht met de titel of URL van een nummer/afspeellijst in " + Channels.MUSIC.getAsMention(guild) + " en het wordt automatisch opgezocht. " +
+				"Muziek afspelen is heel eenvoudig! Stuur een bericht met de titel, URL of een audiobestand in " + Channels.MUSIC.getAsMention(guild) + " en het wordt automatisch opgezocht. " +
 				"Zorg ervoor dat je in " + Channels.VOICE.getAsMention(guild) + " zit! " +
-				"Als de link niet wordt ondersteund, zoekt " + self.getAsMention() + " automatisch op SoundCloud en geeft je maximaal vijf opties om uit te kiezen. " +
+				"Als je een titel stuurt, zoekt " + self.getAsMention() + " automatisch op SoundCloud en geeft je maximaal vijf opties om uit te kiezen. " +
 				"Het gevonden nummer wordt direct afgespeeld of aan de wachtrij toegevoegd. De wachtrij heeft een limiet van `" + MAX_QUEUE_SIZE + "` nummers." +
-				"\n### :paperclip: | Welke links kun je gebruiken?" +
+				"\n### :paperclip: | Welke links/bestanden kun je gebruiken?" +
 				"\n**Soundcloud**\n**Bandcamp**\n**Vimeo**\n**Twitch streams**" +
-				"\n**HTTP URLs** Alle links die eindigen met `.mp3`, `.flac`, `.wav`, `.mka`, `.webm`, `.mp4`, `.m4a`, `.ogg`, `.opus`, `.aac`, `.m3u`, `.pls`." +
+				"\n**HTTP URLs/Bestanden** Alle links/bestanden die eindigen met `.mp3`, `.flac`, `.wav`, `.mka`, `.webm`, `.mp4`, `.m4a`, `.ogg`, `.opus`, `.aac`, `.m3u`, `.pls`." +
 				"\n### :control_knobs: | Hoe bedien je de muziek?" +
 				"\nZodra de muziek speelt, kun je met deze knoppen de boel regelen:" +
 				"\n**`⏸️ Pauzeer`** Zet de muziek even stil." +

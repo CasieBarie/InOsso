@@ -12,4 +12,6 @@ public class Variables {
 	public static final String EMPTY_IMAGE = "attachment://empty.png";
 	public static final String EMPTY_IMAGE_PATH = "empty.png";
 	public static final String ACTION_CANCELLED_MSG = "Actie geannuleerd! Je was te snel.";
+
+	public enum AudioTypes {FILE, SEARCH, LINK, UNSUPPORTED_LINK, UNSUPPORTED_FILE}
 }

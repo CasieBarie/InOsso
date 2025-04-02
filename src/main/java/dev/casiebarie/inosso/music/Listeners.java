@@ -80,14 +80,13 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent e) {
 		if(!e.isFromGuild() || e.getAuthor().isBot()) {return;}
-		Member sender = e.getMember();
-		TextChannel channel = Channels.MUSIC.getAsChannel(sender.getGuild());
+		Member searcher = e.getMember();
+		TextChannel channel = Channels.MUSIC.getAsChannel(searcher.getGuild());
 
 		if(!e.getGuildChannel().equals(channel)) {return;}
-		getLogger().debug("Music search message received by {}", Logger.getUserNameAndId(sender.getUser()));
-		e.getMessage().delete().queue(null, ReplyOperation::error);
+		getLogger().debug("Music search message received by {}", Logger.getUserNameAndId(searcher.getUser()));
 
-		Main.pool.execute(() -> new Search(music, sender, e.getMessage().getContentRaw()));
+		Main.pool.execute(() -> new Search(music, searcher, e.getMessage()));
 	}
 
 	@Override

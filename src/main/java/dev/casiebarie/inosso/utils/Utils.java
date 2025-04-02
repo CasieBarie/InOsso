@@ -3,8 +3,10 @@ package dev.casiebarie.inosso.utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.enums.Roles;
+import dev.casiebarie.inosso.enums.Variables.AudioTypes;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -45,6 +47,7 @@ public class Utils {
 		return true;
 	}
 
+	public static User getCasAltAsUser() {return jda().getUserById(967727194967257208L);}
 	public static User getCasAsUser() {return jda().getUserById(515179486329962502L);}
 	public static Member getCasAsMember(@NotNull Guild guild) {return guild.getMember(getCasAsUser());}
 
@@ -86,18 +89,23 @@ public class Utils {
 		return escapeMarkdown(text.substring(0, endIndex) + "…");
 	}
 
-	/**0 = Search<br>1 = Supported Link<br>2 = Unsupported*/
-	public static int getAudioType(String url) {
+	public static AudioTypes getAudioType(@NotNull Message message) {
 		Set<String> extensions = Set.of("mp3", "flac", "wav", "mka", "webm", "mp4", "m4a", "ogg", "opus", "aac", "m3u", "pls");
 		Set<String> domains = Set.of("soundcloud.com", "m.soundcloud.com", "on.soundcloud.com", "snd.sc", "bandcamp.com", "vimeo.com", "twitch.tv", "m.twitch.tv", "clips.twitch.tv");
+
+		if(!message.getAttachments().isEmpty()) {
+			Message.Attachment attachment = message.getAttachments().get(0);
+			return extensions.contains(attachment.getFileExtension().replace(".", "").toLowerCase()) ? AudioTypes.FILE : AudioTypes.UNSUPPORTED_FILE;
+		}
+
 		try {
-			URL link = new URL(url);
+			URL link = new URL(message.getContentRaw());
 			String host = link.getHost().toLowerCase();
-			if(domains.stream().anyMatch(domain -> host.equals(domain) || host.endsWith("." + domain))) {return 1;}
+			if(domains.stream().anyMatch(domain -> host.equals(domain) || host.endsWith("." + domain))) {return AudioTypes.LINK;}
 			String path = link.getPath().toLowerCase();
 			int dotIndex = path.lastIndexOf('.');
-			return dotIndex == -1 || !extensions.contains(path.substring(dotIndex + 1)) ? 2 : 1;
-		} catch(MalformedURLException ex) {return 0;}
+			return dotIndex == -1 || !extensions.contains(path.substring(dotIndex + 1)) ? AudioTypes.UNSUPPORTED_LINK : AudioTypes.LINK;
+		} catch(MalformedURLException ex) {return AudioTypes.SEARCH;}
 	}
 
 	public static boolean isSoundCloudGoPlus(@NotNull AudioTrack track) {return track.getInfo().identifier.endsWith("/preview/hls");}
