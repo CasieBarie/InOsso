@@ -217,7 +217,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			TextChannel channel = Channels.REQUEST.getAsChannel(guild);
 			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {return;}
-			String webhookName = guild.getSelfMember().getEffectiveName() + " |  Poortwachter🚪";
+			String webhookName = guild.getSelfMember().getEffectiveName() + " | Poortwachter🚪";
 
 			List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
 			onlineMembers.remove(guild.getSelfMember());
