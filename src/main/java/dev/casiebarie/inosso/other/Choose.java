@@ -60,7 +60,7 @@ public class Choose implements Information {
 			.setColor(chosen.getColor())
 			.setImage(EMPTY_IMAGE)
 			.setThumbnail("attachment://avatar.png");
-		textChannel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(chosen.getEffectiveAvatarUrl())).queue();
+		textChannel.sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(chosen.getEffectiveAvatarUrl())).queue(null, ReplyOperation::error);
 	}
 
 	@Override

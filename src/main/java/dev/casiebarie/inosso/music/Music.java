@@ -71,7 +71,7 @@ public class Music implements Information {
 				.setImage(EMPTY_IMAGE)
 				.setColor(Color.RED).build())
 			.setFiles(Utils.loadImage("geenmuziekjes.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
-		.queue(msg -> msg.delete().queueAfter(5, TimeUnit.SECONDS));
+		.queue(msg -> msg.delete().queueAfter(5, TimeUnit.SECONDS, null, ReplyOperation::error), ReplyOperation::error);
 	}
 
 	protected void moveToOne(@NotNull TrackScheduler scheduler, ReplyOperation o) {
