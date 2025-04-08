@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -51,9 +50,6 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 
 	@Override
 	public ScheduledFuture<?> startTask(String guildId) {return Main.scheduledPool.scheduleAtFixedRate(safeRunnable(() -> managers.computeIfAbsent(guildId, k -> new GuildRequestManager()).updateMessage(guildId)), 0, Utils.jitter(100), TimeUnit.MILLISECONDS);}
-
-	@Override
-	public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent e) {managers.get(e.getGuild().getId()).shouldUpdate = true;}
 
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
@@ -156,20 +152,16 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 	}
 
 	class GuildRequestManager {
+		int lastOnline = -1;
 		long lastUpdate = 0;
 		String messageId = "0";
-		boolean shouldUpdate = true, notFound = false, initializing = false;
+		boolean notFound = false, initializing = false;
 
 		private void updateMessage(String guildId) {
 			Guild guild = jda().getGuildById(guildId);
 			try {
 				if(initializing) {return;}
 				if(notFound) {findMessage(guild); return;}
-				if(!shouldUpdate) {return;}
-
-				TextChannel channel = Channels.REQUEST.getAsChannel(guild);
-				Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
-				if(webhook == null) {return;}
 
 				long now = System.currentTimeMillis();
 				if(now - lastUpdate < 500) {return;}
@@ -177,10 +169,15 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 
 				List<Member> onlineMembers = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
 				onlineMembers.remove(guild.getSelfMember());
+				if(lastOnline == onlineMembers.size()) {return;}
+
+				TextChannel channel = Channels.REQUEST.getAsChannel(guild);
+				Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
+				if(webhook == null) {return;}
 
 				webhook.editMessageEmbedsById(messageId, requestEmbed(onlineMembers))
 					.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))
-				.queue(success -> shouldUpdate = false, new ErrorHandler()
+				.queue(null, new ErrorHandler()
 					.handle(ErrorResponse.UNKNOWN_MESSAGE, error -> notFound = true)
 					.andThen(ReplyOperation::error)
 				);
@@ -190,7 +187,6 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 
 		private void findMessage(Guild guild) {
 			initializing = true;
-			shouldUpdate = true;
 			TextChannel channel = Channels.REQUEST.getAsChannel(guild);
 			Message message = channel.getHistoryFromBeginning(3).complete().getRetrievedHistory().stream().filter(Message::isWebhookMessage).findFirst().orElse(null);
 
