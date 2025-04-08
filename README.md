@@ -6,6 +6,13 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.4.0 - Added `Idle` status
+- **Added** | InOsso now shows `Idle` when nobody is in the call.
+- **Dependency** | Updated `net.dv8tion_jda` from `5.3.1` to `5.3.2`.
+- **Fix** | Request message not updating when enveryone leaves at the same time.
+- **Fix** | Dependency checker not sending a message.
+- **Fix** | Some error handling issues.
+
 ### v1.3.0 - Support for audio attachments
 - **Added** | Support for audio attachments.
 - **Fix** | SoundCloud GO+ tracks are now filtered from the 5 search options.
@@ -22,7 +29,7 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 - **Fix** | Dependency update message now only refreshes when there are updates.
 - **Fix** | Spaces in webhook names.
 - **Fix** | Controller message still referring to YouTube instead of SoundCloud.
-- **Fix** | Automatic role rename no doesn't change the bot role.
+- **Fix** | Automatic role rename now doesn't change the bot role.
 
 ### v1.2.0 - View changelog
 - **Added** | The `/help changelog` command to view the changelog of InOsso.
