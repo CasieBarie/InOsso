@@ -24,7 +24,7 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class DependencyChecker extends ListenerAdapter {
-	Map<String, String[]> lastMap = new LinkedHashMap<>();
+	boolean shouldSend = true;
 	protected static final Map<String, String[]> versionMap = new LinkedHashMap<>();
 	public DependencyChecker(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
 
@@ -48,7 +48,9 @@ public class DependencyChecker extends ListenerAdapter {
 		} catch(Exception ex) {getLogger().debug("Failed to check version for {}: {}", dependency, ex.getMessage());}
 
 		dependency = dependency.replace("_", ".");
-		versionMap.put(dependency, new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion});
+		String[] newValue = new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion};
+		String[] oldValue = versionMap.put(dependency, newValue);
+		if(!Arrays.equals(newValue, oldValue)) {shouldSend = true;}
 		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().warn("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
 	}
 
@@ -78,6 +80,9 @@ public class DependencyChecker extends ListenerAdapter {
 	}
 
 	private void sendToCas() {
+		if(!shouldSend) {return;}
+		shouldSend = false;
+
 		List<MessageEmbed> embeds = new ArrayList<>();
 		versionMap.forEach((k, v) -> {
 			if(v[1] == null || v[0].equals(v[1])) {return;}
@@ -91,9 +96,6 @@ public class DependencyChecker extends ListenerAdapter {
 				.build()
 			);
 		});
-
-		if(lastMap.size() == versionMap.size() && lastMap.entrySet().stream().allMatch(e -> Arrays.deepEquals(e.getValue(), versionMap.get(e.getKey())))) {return;}
-		lastMap = versionMap;
 
 		PrivateChannel channel = Utils.getCasAsUser().openPrivateChannel().complete();
 		channel.getIterableHistory().takeAsync(1000).thenApply(channel::purgeMessages).whenComplete((success, error) -> {
