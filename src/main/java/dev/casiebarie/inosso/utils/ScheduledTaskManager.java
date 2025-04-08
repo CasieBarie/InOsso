@@ -5,6 +5,7 @@ import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.ScheduledTask;
 import dev.casiebarie.inosso.utils.logging.Logger;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static dev.casiebarie.inosso.Main.jda;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class ScheduledTaskManager extends ListenerAdapter {
@@ -49,6 +51,7 @@ public class ScheduledTaskManager extends ListenerAdapter {
 		String guildId = guild.getId();
 		runningTasks.putIfAbsent(guildId, new ConcurrentHashMap<>());
 		getLogger().debug("Starting tasks for {}", Logger.getGuildNameAndId(guild));
+		if(guildId.equals("844304271649538058")) {jda().getPresence().setStatus(OnlineStatus.ONLINE);}
 
 		for(ScheduledTask taskClass : scheduledTasksClasses) {
 			if(runningTasks.get(guildId).containsKey(taskClass.getClass())) {continue;}
@@ -74,6 +77,7 @@ public class ScheduledTaskManager extends ListenerAdapter {
 		getLogger().debug("Stopping tasks for {}", Logger.getGuildNameAndId(guild));
 		String guildId = guild.getId();
 		Map<Class<? extends ScheduledTask>, ScheduledFuture<?>> tasks = runningTasks.remove(guildId);
+		if(guildId.equals("844304271649538058")) {jda().getPresence().setStatus(OnlineStatus.IDLE);}
 
 		if(tasks == null) {return;}
 		tasks.values().forEach(task -> task.cancel(true));
