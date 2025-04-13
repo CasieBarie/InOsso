@@ -51,7 +51,7 @@ public class DependencyChecker extends ListenerAdapter {
 		String[] newValue = new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion};
 		String[] oldValue = versionMap.put(dependency, newValue);
 		if(!Arrays.equals(newValue, oldValue)) {shouldSend = true;}
-		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().warn("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
+		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().info("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
 	}
 
 	private @Nullable String getLatestVersion(@NotNull String dependency) throws IOException {
@@ -88,7 +88,7 @@ public class DependencyChecker extends ListenerAdapter {
 			if(v[1] == null || v[0].equals(v[1])) {return;}
 			embeds.add(
 				new EmbedBuilder()
-					.setColor(Color.ORANGE)
+					.setColor(Color.PINK)
 					.setImage(EMPTY_IMAGE)
 					.setDescription("# Dependency update!" +
 						"\n### `" + k + "`" +
@@ -98,7 +98,10 @@ public class DependencyChecker extends ListenerAdapter {
 		});
 
 		PrivateChannel channel = Utils.getCasAsUser().openPrivateChannel().complete();
-		channel.getIterableHistory().takeAsync(1000).thenApply(channel::purgeMessages).whenComplete((success, error) -> {
+		channel.getIterableHistory().takeAsync(1000).thenApply(list -> channel.purgeMessages(list.stream().filter(msg -> {
+			if(msg.getEmbeds().isEmpty()) {return false;}
+			return msg.getEmbeds().get(0).getColor().equals(Color.PINK);
+		}).toList())).whenCompleteAsync((success, error) -> {
 			if(embeds.isEmpty()) {return;}
 			channel.sendMessageEmbeds(embeds).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, ReplyOperation::error);
 		});

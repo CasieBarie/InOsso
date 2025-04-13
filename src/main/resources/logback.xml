@@ -6,7 +6,9 @@
             <pattern>[%d{dd-MM-yyyy HH:mm:ss.SSS}] %highlightex(%-5level) %boldCyan(|%-25.-25thread|) %boldGreen(|%-25.-25logger |) >> %nopex %highlightex(%msg%n%ex)</pattern>
         </encoder>
     </appender>
+    <appender name="DISCORD" class="dev.casiebarie.inosso.utils.logging.DiscordLogger"/>
     <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DISCORD"/>
     </root>
 </configuration>
