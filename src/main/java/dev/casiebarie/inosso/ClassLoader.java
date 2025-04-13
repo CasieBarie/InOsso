@@ -40,6 +40,7 @@ public class ClassLoader {
 	public final Come come = new Come(this);
 	public final Guest guest = new Guest(this);
 	public final JoinManager joinManager = new JoinManager(this);
+	public final MessageDeleter messageDeleter = new MessageDeleter(this);
 	public final Request request = new Request(this);
 	public final RoleNameManager roleNameManager = new RoleNameManager(this);
 	public final SendEmbed sendEmbed = new SendEmbed(this);
