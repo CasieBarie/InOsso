@@ -6,6 +6,13 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.5.0 - React `❌` to delete messages.
+- **Added** | Reacting `❌` to a bot message will delete the message.
+- **Added** | Warnings and errors will now be sent to Cas directly.
+- **Fix** | Music replay not working.
+- **Fix** | Webhook creation causing error.
+- **Ohter** | Changes to instance loading.
+
 ### v1.4.0 - Added `Idle` status
 - **Added** | InOsso now shows `Idle` when nobody is in the call.
 - **Dependency** | Updated `net.dv8tion_jda` from `5.3.1` to `5.3.2`.
