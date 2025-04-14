@@ -172,7 +172,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	private void copyAndSaveTrack(@NotNull AudioTrack track, String adder, ReplyOperation o) {
 		PlayerManager manager = PlayerManager.getInstance(music);
-		manager.getAudioPlayerManager().loadItemOrdered(manager.getGuildMusicManager(jda().getGuildById(guildId)), track.getInfo().identifier, new AudioLoadResultHandler() {
+		manager.getAudioPlayerManager().loadItemOrdered(manager.getGuildMusicManager(jda().getGuildById(guildId)), track.getInfo().uri, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack audioTrack) {
 				audioTrack.setUserData(adder);
