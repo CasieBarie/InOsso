@@ -54,11 +54,10 @@ public class Guest implements CommandListener {
 		if(Utils.isGuest(guest, true) && add) {o.sendNotAllowed(guest.getAsMention() + " is al een " + gastAllowed.getAsMention() + "!"); return;}
 		if(Utils.isGuest(guest, false) && !add) {o.sendNotAllowed(guest.getAsMention() + " is al een " + gastRestricted.getAsMention() + "!"); return;}
 
+		Webhook webhook = WebhookManager.getWebhook(channel, "GateKeeper");
 		switchGuest(guest, add).whenComplete((success, error) -> {
 			if(error != null) {o.sendFailed(error); return;}
 			getLogger().debug("Switched guest role of {}", Logger.getUserNameAndId(guest.getUser()));
-
-			Webhook webhook = WebhookManager.getWebhook(channel, "GateKeeper");
 			if(!add || webhook == null) {o.sendSuccess(String.format("%s is nu een %s!", guest.getAsMention(), add ? gastAllowed.getAsMention() : gastRestricted.getAsMention())); return;}
 
 			webhook.sendMessageEmbeds(Request.answeredEmbed(guest, true))
