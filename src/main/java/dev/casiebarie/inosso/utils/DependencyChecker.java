@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,7 +26,7 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 public class DependencyChecker extends ListenerAdapter {
 	boolean shouldSend = true;
 	protected static final Map<String, String[]> versionMap = new LinkedHashMap<>();
-	public DependencyChecker(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
+	public DependencyChecker(@NotNull InstanceManager iManager) {iManager.registerAsEventListener(this);}
 
 	@Override
 	public void onGuildReady(GuildReadyEvent e) {Main.scheduledPool.scheduleAtFixedRate(safeRunnable(this::checkDependencies), 0, 1, TimeUnit.DAYS);}

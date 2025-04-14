@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.enums.Roles;
@@ -41,10 +41,10 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 public class Come extends ListenerAdapter implements CommandListener, Information {
 	static final String WEBHOOK_ID = "Come";
 	Map<String, GuildComeManager> managers = new HashMap<>();
-	public Come(@NotNull ClassLoader classes) {
-		classes.registerAsEventListener(this);
-		classes.registerAsCommandListener(this, true);
-		classes.registerAsInformationClass("komen", this);
+	public Come(@NotNull InstanceManager iManager) {
+		iManager.registerAsEventListener(this);
+		iManager.registerAsCommandListener(this, true);
+		iManager.registerAsInformationClass("komen", this);
 	}
 
 	@Override

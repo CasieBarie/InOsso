@@ -1,10 +1,11 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.Information;
 import dev.casiebarie.inosso.interfaces.ScheduledTask;
+import dev.casiebarie.inosso.music.Music;
 import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.WebhookManager;
@@ -37,15 +38,15 @@ import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Request extends ListenerAdapter implements ScheduledTask, Information {
-	final ClassLoader classes;
+	final InstanceManager iManager;
 	static final String WEBHOOK_ID = "GateKeeper";
 	Map<String, Long> cooldowns = new HashMap<>();
 	Map<String, GuildRequestManager> managers = new HashMap<>();
-	public Request(@NotNull ClassLoader classes) {
-		this.classes = classes;
-		classes.registerAsEventListener(this);
-		classes.registerAsScheduledTaskClass(this);
-		classes.registerAsInformationClass("gasten", this);
+	public Request(@NotNull InstanceManager iManager) {
+		this.iManager = iManager;
+		iManager.registerAsEventListener(this);
+		iManager.registerAsScheduledTaskClass(this);
+		iManager.registerAsInformationClass("gasten", this);
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		long time = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(REQUEST_COOLDOWN_HOURS);
 		cooldowns.put(requester.getId(), time);
 
-		classes.music.playCall(guild, channel);
+		iManager.get(Music.class).playCall(guild, channel);
 		Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 		if(webhook == null) {return;}
 		webhook.sendMessageEmbeds(requestingEmbed(requester))
@@ -113,12 +114,12 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		ReplyOperation o = new ReplyOperation(e);
 		if(Utils.isGuest(e.getMember(), true)) {o.sendNotAllowed("Gasten hebben geen toestemming om hierop te reageren."); return;}
 
-		classes.music.stopLooping(e.getGuild());
+		iManager.get(Music.class).stopLooping(e.getGuild());
 		Member requester = e.getGuild().getMemberById(e.getComponentId().split("-")[1]);
 		if(Utils.isGuest(requester, true)) {o.sendFailed("Er heeft al iemand gereageerd."); return;}
 
 		if(approve) {
-			try {classes.guest.switchGuest(requester, true).get();
+			try {iManager.get(Guest.class).switchGuest(requester, true).get();
 			} catch(InterruptedException | ExecutionException ex) {
 				Thread.currentThread().interrupt();
 				o.sendFailed(ex);

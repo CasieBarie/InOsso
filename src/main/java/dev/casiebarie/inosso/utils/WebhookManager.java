@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.entities.Icon;
@@ -26,7 +26,7 @@ public class WebhookManager extends ListenerAdapter {
 	boolean isStarted = false;
 	static boolean isInitialized = false;
 	static void setIsInitialized() {WebhookManager.isInitialized = true;}
-	public WebhookManager(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
+	public WebhookManager(@NotNull InstanceManager iManager) {iManager.registerAsEventListener(this);}
 
 	@Override
 	public void onGuildReady(GuildReadyEvent e) {

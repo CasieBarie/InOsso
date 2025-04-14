@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.interfaces.CommandListener;
 import dev.casiebarie.inosso.utils.logging.Logger;
@@ -20,12 +20,12 @@ import java.util.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class CommandManager extends ListenerAdapter {
-	final ClassLoader classes;
+	final InstanceManager iManager;
 	Map<CommandData, CommandListener> commandListeners = new HashMap<>();
 	Map<CommandListener, Boolean> needsPoolMap = new HashMap<>();
-	public CommandManager(@NotNull ClassLoader classes, @NotNull Map<CommandListener, Boolean> commandListeners) {
-		this.classes = classes;
-		classes.registerAsEventListener(this);
+	public CommandManager(@NotNull InstanceManager iManager, @NotNull Map<CommandListener, Boolean> commandListeners) {
+		this.iManager = iManager;
+		iManager.registerAsEventListener(this);
 		needsPoolMap = commandListeners;
 		commandListeners.keySet().forEach(listener -> this.commandListeners.put(listener.getCommand(), listener));
 	}
@@ -70,7 +70,7 @@ public class CommandManager extends ListenerAdapter {
 			Scanner scanner = new Scanner(System.in);
 			while(scanner.hasNextLine()) {
 				String input = scanner.nextLine();
-				if(input.equals("shutdown")) {classes.shutdown();
+				if(input.equals("shutdown")) {iManager.shutdown();
 				} else {getLogger().warn("Unknown command: {}", input);}
 			}
 		});

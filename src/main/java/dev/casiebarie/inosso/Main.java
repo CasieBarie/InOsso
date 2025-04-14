@@ -17,18 +17,18 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Main extends ListenerAdapter {
 	static JDA jda;
-	ClassLoader classes;
+	InstanceManager iManager;
 	public static void main(String[] args) {
 		Main main = new Main();
 		new Logger();
 		Thread.setDefaultUncaughtExceptionHandler((t, ex) -> getLogger().error(ex.getMessage(), ex));
-		main.classes = new ClassLoader(main);
-		main.classes.registerAsEventListener(main);
+		main.iManager = new InstanceManager(main);
+		main.iManager.registerAsEventListener(main);
 		jda = JDABuilder.createDefault(main.getToken())
 			.setChunkingFilter(ChunkingFilter.ALL)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
 			.enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.MESSAGE_CONTENT)
-			.addEventListeners(main.classes.getEventListeners().toArray())
+			.addEventListeners(main.iManager.getEventListeners().toArray())
 			.setAudioSendFactory(new NativeAudioSendFactory())
 			.setCallbackPool(pool, true)
 			.setGatewayPool(scheduledPool, true)

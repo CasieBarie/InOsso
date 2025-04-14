@@ -2,7 +2,7 @@ package dev.casiebarie.inosso.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.Information;
 import dev.casiebarie.inosso.music.lavaplayer.PlayerManager;
@@ -29,10 +29,10 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 public class Music implements Information {
 	public final QueueViewer queueViewer;
 	public final Map<String, Controller> controllers = new HashMap<>();
-	public Music(ClassLoader classes) {
+	public Music(InstanceManager iManager) {
 		this.queueViewer = new QueueViewer();
-		new Listeners(classes, this);
-		classes.registerAsInformationClass("muziekjes", this);
+		new Listeners(iManager, this);
+		iManager.registerAsInformationClass("muziekjes", this);
 	}
 
 	public void connect(@NotNull Guild guild) {

@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.enums.Roles;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class JoinManager extends ListenerAdapter {
-	public JoinManager(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
+	public JoinManager(@NotNull InstanceManager iManager) {iManager.registerAsEventListener(this);}
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent e) {

@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.CommandListener;
 import dev.casiebarie.inosso.interfaces.Information;
@@ -31,10 +31,10 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 
 public class Choose implements Information {
 	final Random random = new Random();
-	public Choose(ClassLoader classes) {
-		new Context(classes);
-		new Slash(classes);
-		classes.registerAsInformationClass("kies", this);
+	public Choose(InstanceManager iManager) {
+		new Context(iManager);
+		new Slash(iManager);
+		iManager.registerAsInformationClass("kies", this);
 	}
 
 	private void choose(@NotNull GenericCommandInteractionEvent e) {
@@ -81,13 +81,13 @@ public class Choose implements Information {
 	}
 
 	class Context implements CommandListener {
-		public Context(@NotNull ClassLoader classes) {classes.registerAsCommandListener(this, true);}
+		public Context(@NotNull InstanceManager iManager) {iManager.registerAsCommandListener(this, true);}
 		@Override public CommandData getCommand() {return Commands.user("Kies 🎲");}
 		@Override public void onCommand(UserContextInteraction e) {choose((GenericCommandInteractionEvent) e);}
 	}
 
 	class Slash implements CommandListener {
-		public Slash(@NotNull ClassLoader classes) {classes.registerAsCommandListener(this, true);}
+		public Slash(@NotNull InstanceManager iManager) {iManager.registerAsCommandListener(this, true);}
 		@Override public CommandData getCommand() {return Commands.slash("kies", String.format("%s | Selecteer willekeurig iemand uit de voicecall." , Emoji.fromFormatted("🎲")));}
 		@Override public void onCommand(SlashCommandInteraction e) {choose((GenericCommandInteractionEvent) e);}
 	}

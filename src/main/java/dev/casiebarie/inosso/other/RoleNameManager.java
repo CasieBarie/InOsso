@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class RoleNameManager extends ListenerAdapter {
-	public RoleNameManager(@NotNull ClassLoader classes) {classes.registerAsEventListener(this);}
+	public RoleNameManager(@NotNull InstanceManager iManager) {iManager.registerAsEventListener(this);}
 
 	@Override
 	public void onGuildReady(GuildReadyEvent e) {Main.pool.execute(() -> e.getGuild().getMembers().stream().filter(Utils::isSpecial).forEach(this::changeRoleName));}

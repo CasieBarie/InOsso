@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.interfaces.CommandListener;
 import dev.casiebarie.inosso.interfaces.Information;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -28,13 +28,11 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE;
 import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 
 public class Help implements CommandListener, Information {
-	final ClassLoader classes;
 	final Map<String, Information> informations;
-	public Help(@NotNull ClassLoader classes, Map<String, Information> informations) {
-		this.classes = classes;
+	public Help(@NotNull InstanceManager iManager, Map<String, Information> informations) {
 		this.informations = informations;
-		classes.registerAsInformationClass("bot-info", this);
-		classes.registerAsCommandListener(this, true);
+		iManager.registerAsInformationClass("bot-info", this);
+		iManager.registerAsCommandListener(this, true);
 	}
 
 	@Override

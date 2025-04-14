@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.utils;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.ScheduledTask;
@@ -27,9 +27,9 @@ public class ScheduledTaskManager extends ListenerAdapter {
 	final List<ScheduledTask> scheduledTasksClasses;
 	final Map<String, ScheduledFuture<?>> stopTasks = new ConcurrentHashMap<>();
 	final Map<String, Map<Class<? extends ScheduledTask>, ScheduledFuture<?>>> runningTasks = new ConcurrentHashMap<>();
-	public ScheduledTaskManager(@NotNull ClassLoader classes, List<ScheduledTask> scheduledTaskClasses) {
+	public ScheduledTaskManager(@NotNull InstanceManager iManager, List<ScheduledTask> scheduledTaskClasses) {
 		this.scheduledTasksClasses = scheduledTaskClasses;
-		classes.registerAsEventListener(this);
+		iManager.registerAsEventListener(this);
 	}
 
 	@Override

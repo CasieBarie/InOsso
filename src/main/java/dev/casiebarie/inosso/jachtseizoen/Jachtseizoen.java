@@ -1,11 +1,12 @@
 package dev.casiebarie.inosso.jachtseizoen;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.CommandListener;
 import dev.casiebarie.inosso.interfaces.Information;
 import dev.casiebarie.inosso.interfaces.ScheduledTask;
+import dev.casiebarie.inosso.music.Music;
 import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.logging.Logger;
@@ -33,15 +34,15 @@ import static dev.casiebarie.inosso.enums.Variables.*;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Jachtseizoen extends ListenerAdapter implements CommandListener, ScheduledTask, Information {
-	final ClassLoader classes;
+	final InstanceManager iManager;
 	Random random = new Random();
 	Map<String, GuildManager> managers = new HashMap<>();
-	public Jachtseizoen(@NotNull ClassLoader classes) {
-		this.classes = classes;
-		classes.registerAsEventListener(this);
-		classes.registerAsCommandListener(this, true);
-		classes.registerAsScheduledTaskClass(this);
-		classes.registerAsInformationClass("jachtseizoen", this);
+	public Jachtseizoen(@NotNull InstanceManager iManager) {
+		this.iManager = iManager;
+		iManager.registerAsEventListener(this);
+		iManager.registerAsCommandListener(this, true);
+		iManager.registerAsScheduledTaskClass(this);
+		iManager.registerAsInformationClass("jachtseizoen", this);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 			if(!Utils.isInVoice(e.getMember(), o)) {return;}
 
 			switch(id.split("-")[1]) {
-			case "start" -> {manager.onStartButton(o); classes.music.playJachtseizoen(guild);}
+			case "start" -> {manager.onStartButton(o); iManager.get(Music.class).playJachtseizoen(guild);}
 			case "reroll" -> manager.onRerollButton(o);
 			case "stop" -> manager.onStopButton(o);
 			case "cancel" -> manager.onCancelButton(o);

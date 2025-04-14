@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.interfaces.CommandListener;
 import dev.casiebarie.inosso.interfaces.Information;
@@ -35,10 +35,10 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class SendEmbed extends ListenerAdapter implements CommandListener, Information {
-	public SendEmbed(@NotNull ClassLoader classes) {
-		classes.registerAsEventListener(this);
-		classes.registerAsCommandListener(this, true);
-		classes.registerAsInformationClass("stuur", this);
+	public SendEmbed(@NotNull InstanceManager iManager) {
+		iManager.registerAsEventListener(this);
+		iManager.registerAsCommandListener(this, true);
+		iManager.registerAsInformationClass("stuur", this);
 	}
 
 	@Override

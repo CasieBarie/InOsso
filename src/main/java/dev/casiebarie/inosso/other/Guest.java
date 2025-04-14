@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.enums.Roles;
 import dev.casiebarie.inosso.interfaces.CommandListener;
@@ -28,7 +28,7 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Guest implements CommandListener {
-	public Guest(@NotNull ClassLoader classes) {classes.registerAsCommandListener(this, true);}
+	public Guest(@NotNull InstanceManager iManager) {iManager.registerAsCommandListener(this, true);}
 
 	@Override
 	public CommandData getCommand() {

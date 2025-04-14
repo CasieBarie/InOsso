@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.Information;
@@ -23,9 +23,9 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Clips extends ListenerAdapter implements Information {
-	public Clips(@NotNull ClassLoader classes) {
-		classes.registerAsEventListener(this);
-		classes.registerAsInformationClass("climpies", this);
+	public Clips(@NotNull InstanceManager iManager) {
+		iManager.registerAsEventListener(this);
+		iManager.registerAsInformationClass("climpies", this);
 	}
 
 	@Override

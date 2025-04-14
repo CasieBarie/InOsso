@@ -1,6 +1,6 @@
 package dev.casiebarie.inosso.other;
 
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.interfaces.Information;
 import dev.casiebarie.inosso.utils.ReplyOperation;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Changelog implements Information {
-	public Changelog(@NotNull ClassLoader classes) {classes.registerAsInformationClass("changelog", this);}
+	public Changelog(@NotNull InstanceManager iManager) {iManager.registerAsInformationClass("changelog", this);}
 
 	@Override
 	public void sendInformation(@NotNull ReplyOperation o) {o.e.getHook().sendFiles(createFile(getChangelog())).queue(null, o::sendFailed);}

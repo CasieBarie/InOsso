@@ -1,10 +1,11 @@
 package dev.casiebarie.inosso.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import dev.casiebarie.inosso.ClassLoader;
+import dev.casiebarie.inosso.InstanceManager;
 import dev.casiebarie.inosso.Main;
 import dev.casiebarie.inosso.enums.Channels;
 import dev.casiebarie.inosso.interfaces.ScheduledTask;
+import dev.casiebarie.inosso.jachtseizoen.Jachtseizoen;
 import dev.casiebarie.inosso.music.lavaplayer.GuildMusicManager;
 import dev.casiebarie.inosso.music.lavaplayer.PlayerManager;
 import dev.casiebarie.inosso.utils.ReplyOperation;
@@ -30,12 +31,12 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class Listeners extends ListenerAdapter implements ScheduledTask {
 	final Music music;
-	final ClassLoader classes;
-	public Listeners(@NotNull ClassLoader classes, Music music) {
-		this.classes = classes;
+	final InstanceManager iManager;
+	public Listeners(@NotNull InstanceManager iManager, Music music) {
+		this.iManager = iManager;
 		this.music = music;
-		classes.registerAsEventListener(this);
-		classes.registerAsScheduledTaskClass(this);
+		iManager.registerAsEventListener(this);
+		iManager.registerAsScheduledTaskClass(this);
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 		List<Member> members = new ArrayList<>(Channels.VOICE.getAsChannel(guild).getMembers());
 		members.remove(guild.getSelfMember());
 		if(!members.isEmpty()) {return;}
-		classes.jachtseizoen.stopPlaying(guild, false);
+		iManager.get(Jachtseizoen.class).stopPlaying(guild, false);
 		music.stopMusic(guild, false);
 	}
 
