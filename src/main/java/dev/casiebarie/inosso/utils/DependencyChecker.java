@@ -24,7 +24,6 @@ import static dev.casiebarie.inosso.enums.Variables.EMPTY_IMAGE_PATH;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class DependencyChecker extends ListenerAdapter {
-	boolean shouldSend = true;
 	protected static final Map<String, String[]> versionMap = new LinkedHashMap<>();
 	public DependencyChecker(@NotNull InstanceManager iManager) {iManager.registerAsEventListener(this);}
 
@@ -48,9 +47,7 @@ public class DependencyChecker extends ListenerAdapter {
 		} catch(Exception ex) {getLogger().debug("Failed to check version for {}: {}", dependency, ex.getMessage());}
 
 		dependency = dependency.replace("_", ".");
-		String[] newValue = new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion};
-		String[] oldValue = versionMap.put(dependency, newValue);
-		if(!Arrays.equals(newValue, oldValue)) {shouldSend = true;}
+		versionMap.put(dependency, new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion});
 		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().info("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
 	}
 
@@ -80,9 +77,6 @@ public class DependencyChecker extends ListenerAdapter {
 	}
 
 	private void sendToCas() {
-		if(!shouldSend) {return;}
-		shouldSend = false;
-
 		List<MessageEmbed> embeds = new ArrayList<>();
 		versionMap.forEach((k, v) -> {
 			if(v[1] == null || v[0].equals(v[1])) {return;}
