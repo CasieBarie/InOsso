@@ -6,7 +6,12 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
-### v1.5.0 - React `❌` to delete messages.
+### v1.5.1 - Dependency update & Other
+- **Dependency** | Updated `net.dv8tion_jda` from `5.3.2` to `5.4.0`.
+- **Other** | Activity status changes.
+- **Removed** | Checks for sending dependency update message.
+
+### v1.5.0 - React `❌` to delete messages
 - **Added** | Reacting `❌` to a bot message will delete the message.
 - **Added** | Warnings and errors will now be sent to Cas directly.
 - **Fix** | Music replay not working.
@@ -22,7 +27,7 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 
 ### v1.3.0 - Support for audio attachments
 - **Added** | Support for audio attachments.
-- **Fix** | SoundCloud GO+ tracks are now filtered from the 5 search options.
+- **Fix** | SoundCloud GO+ tracks are now filtered from the five search options.
 - **Fix** | Search message formatting.
 - **Fix** | Space in 'Poortwachter' webhook name.
 
