@@ -48,12 +48,12 @@ public class DependencyChecker extends ListenerAdapter {
 
 		dependency = dependency.replace("_", ".");
 		versionMap.put(dependency, new String[]{currentVersion, latestVersion != null ? latestVersion : currentVersion});
-		if(latestVersion != null && !latestVersion.equals(currentVersion)) {getLogger().info("Update available: {} `{} -> {}`", dependency, currentVersion, latestVersion);}
+		getLogger().debug("Latest version for {}: {}", dependency, latestVersion);
 	}
 
 	private @Nullable String getLatestVersion(@NotNull String dependency) throws IOException {
 		String[] parts = dependency.split("_");
-		String url = "https://search.maven.org/solrsearch/select?q=g:%22" + parts[0] + "%22+AND+a:%22" + parts[1] + "%22&rows=1&wt=json";
+		String url = "https://search.maven.org/solrsearch/select?q=g:%22" + parts[0] + "%22+AND+a:%22" + parts[1] + "%22&core=gav&rows=5&wt=json&sort=version+desc";
 
 		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 		connection.setRequestMethod("GET");
@@ -65,21 +65,36 @@ public class DependencyChecker extends ListenerAdapter {
 
 		try(Scanner scanner = new Scanner(connection.getInputStream())) {
 			String response = scanner.useDelimiter("\\A").next();
-			int versionIndex = response.indexOf("\"latestVersion\":\"");
-			if(versionIndex == -1) {return null;}
-			int start = versionIndex + 17;
-			int end = response.indexOf("\"", start);
-			if(end == -1) {return null;}
-			String latestVersion = response.substring(start, end);
-			if(latestVersion == null || latestVersion.contains("beta") || latestVersion.contains("SNAPSHOT") || latestVersion.contains("alpha")) {return null;}
-			return latestVersion;
+			List<String> versions = new ArrayList<>();
+			int index = 0;
+			while((index = response.indexOf("\"v\":\"", index)) != -1) {
+				int start = index + 5;
+				int end = response.indexOf("\"", start);
+				if(end == -1) break;
+				String version = response.substring(start, end);
+				versions.add(version);
+				index = end + 1;
+			}
+
+			for(String version : versions) {
+				String lower = version.toLowerCase();
+				if(!lower.contains("alpha") && !lower.contains("beta") && !lower.contains("rc") && !lower.contains("snapshot") && !version.contains("-")) {return version;}
+			} return null;
 		}
 	}
 
 	private void sendToCas() {
 		List<MessageEmbed> embeds = new ArrayList<>();
 		versionMap.forEach((k, v) -> {
-			if(v[1] == null || v[0].equals(v[1])) {return;}
+			if(v[0] == null) {return;}
+
+			try {
+				int currentVersion = Integer.parseInt(v[0].replaceAll("\\.", ""));
+				int latestVersion = Integer.parseInt(v[1].replaceAll("\\.", ""));
+				if(currentVersion >= latestVersion) {return;}
+			} catch(NumberFormatException ex) {if(v[0].equals(v[1])) {return;}}
+
+			getLogger().info("Update available: {} `{} -> {}`", k, v[0], v[1]);
 			embeds.add(
 				new EmbedBuilder()
 					.setColor(Color.PINK)
