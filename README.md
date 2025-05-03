@@ -6,6 +6,11 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v1.5.3 - Dependency updates & Bugfixes
+- **Fix** | Dependency checker fixes.
+- **Dependency** | Updated `net.dv8tion_jda` from `5.5.0` to `5.5.1`.
+- **Dependency** | Updated `org.slf4j_slf4j-api` from `2.0.16` to `2.0.17`. 
+
 ### v1.5.2 - Dependency update
 - **Dependency** | Updated `net.dv8tion_jda` from `5.4.0` to `5.5.0`.
 
