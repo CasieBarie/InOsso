@@ -79,7 +79,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 			builder.setComponents();
 			e.getChannel().sendMessage(builder.build()).and(message.delete()).queue(success -> {
 				o.replyEmpty();
-				getLogger().info("Message from JSON send in {} by {}", Logger.getChannelNameAndId(e.getChannel()), Logger.getUserNameAndId(e.getUser()));
+				getLogger().info("Messages from JSON send in {} by {}", Logger.getChannelNameAndId(e.getChannel()), Logger.getUserNameAndId(e.getUser()));
 			}, o::sendFailed);
 		});
 	}

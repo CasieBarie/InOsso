@@ -80,7 +80,7 @@ public class Main extends ListenerAdapter {
 	public static @NotNull Runnable safeRunnable(Runnable runnable) {
 		return () -> {
 			try {runnable.run();
-			} catch(RejectedExecutionException ex) {getLogger().debug(ex.getMessage());
+			} catch(RejectedExecutionException ex) {getLogger().debug("Task rejected: {}", ex.getMessage());
 			} catch(Exception ex) {getLogger().error(ex.getMessage(), ex);}
 		};
 	}

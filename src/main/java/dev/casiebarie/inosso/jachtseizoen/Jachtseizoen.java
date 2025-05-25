@@ -25,8 +25,11 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +39,7 @@ import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 public class Jachtseizoen extends ListenerAdapter implements CommandListener, ScheduledTask, Information {
 	final InstanceManager iManager;
 	Random random = new Random();
-	Map<String, GuildManager> managers = new HashMap<>();
+	Map<String, GuildManager> managers = new ConcurrentHashMap<>();
 	public Jachtseizoen(@NotNull InstanceManager iManager) {
 		this.iManager = iManager;
 		iManager.registerAsEventListener(this);
@@ -75,22 +78,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 		if(!id.startsWith("jachtseizoen-")) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
 		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
-
-		Main.pool.execute(() -> {
-			Guild guild = e.getGuild();
-			ReplyOperation o = new ReplyOperation(e);
-			GuildManager manager = managers.get(guild.getId());
-			if(manager == null) {o.sendNotAllowed("Er is geen jachtseizoen actief!"); return;}
-			if(!Utils.isInVoice(e.getMember(), o)) {return;}
-
-			switch(id.split("-")[1]) {
-			case "start" -> {manager.onStartButton(o); iManager.get(Music.class).playJachtseizoen(guild);}
-			case "reroll" -> manager.onRerollButton(o);
-			case "stop" -> manager.onStopButton(o);
-			case "cancel" -> manager.onCancelButton(o);
-			case "pause" -> manager.onPauseButton(o);
-			default -> o.sendNotAllowed("Deze knop herken ik niet.");}
-		});
+		Main.pool.execute(() -> handleButtonInteraction(e));
 	}
 
 	@Override
@@ -118,6 +106,23 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 			);
 
 		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
+	}
+
+	private void handleButtonInteraction(@NotNull ButtonInteractionEvent e) {
+		Guild guild = e.getGuild();
+		ReplyOperation o = new ReplyOperation(e);
+		GuildManager manager = managers.get(guild.getId());
+		if(manager == null) {o.sendNotAllowed("Er is geen jachtseizoen actief!"); return;}
+		if(!Utils.isInVoice(e.getMember(), o)) {return;}
+
+		String action = e.getButton().getId().split("-")[1];
+		switch(action) {
+		case "start" -> {manager.onStartButton(o); iManager.get(Music.class).playJachtseizoen(e.getGuild());}
+		case "reroll" -> manager.onRerollButton(o);
+		case "stop" -> manager.onStopButton(o);
+		case "cancel" -> manager.onCancelButton(o);
+		case "pause" -> manager.onPauseButton(o);
+		default -> o.sendNotAllowed("Deze knop herken ik niet.\n");}
 	}
 
 	public void stopPlaying(Guild guild, boolean isCancel) {

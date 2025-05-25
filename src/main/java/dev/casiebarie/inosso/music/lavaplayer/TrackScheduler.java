@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -54,36 +55,23 @@ public class TrackScheduler extends AudioEventAdapter {
 	}
 
 	@Override
-	public void onTrackException(AudioPlayer player, @NotNull AudioTrack track, FriendlyException exception) {
-		String trackTitle = Utils.truncate(track.getInfo().title, 180);
-		getLogger().error("Error playing track: {}", trackTitle, exception);
-		Guild guild = jda().getGuildById(guildId);
-		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild)).sendFailed(String.format("Error bij het afspelen van: `%s`", trackTitle));
-	}
+	public void onTrackException(AudioPlayer player, @NotNull AudioTrack track, @NotNull FriendlyException exception) {handleTrackError(track, "Error bij het afspelen van: `%s`", exception.getMessage());}
 
 	@Override
-	public void onTrackStuck(AudioPlayer player, @NotNull AudioTrack track, long thresholdMs) {
-		String trackTitle = Utils.truncate(track.getInfo().title, 180);
-		getLogger().warn("Track stuck: {} (Threshold: {}ms)", trackTitle, thresholdMs);
-		Guild guild = jda().getGuildById(guildId);
-		new ReplyOperation((GuildMessageChannel) Channels.MUSIC.getAsChannel(guild)).sendFailed(String.format("Het nummer `%s` is vastegelopen en wordt geskipt.", trackTitle));
-		nextTrack(true);
-	}
+	public void onTrackStuck(AudioPlayer player, @NotNull AudioTrack track, long thresholdMs) {handleTrackError(track, "Het nummer `%s` is vastegelopen en wordt geskipt.");}
 
 	public boolean queueTrack(@NotNull AudioTrack track, String adder) {
 		track.setUserData(adder);
-		if(player.getPlayingTrack() == null) {player.playTrack(track);
-		} else {
-			if(queue.size() >= MAX_QUEUE_SIZE) {return false;}
-			queue.offer(track);
-		} return true;
+		if(player.getPlayingTrack() == null) {player.playTrack(track); return true;}
+		if(queue.size() >= MAX_QUEUE_SIZE) {return false;}
+		return queue.offer(track);
 	}
 
 	public int queueAll(@NotNull AudioPlaylist playlist, String adder) {
 		int count = 0;
 		for(AudioTrack track : playlist.getTracks()) {
-			track.setUserData(adder);
 			if(Utils.isSoundCloudGoPlus(track)) {continue;}
+			track.setUserData(adder);
 			if(player.getPlayingTrack() == null) {player.playTrack(track);
 			} else {
 				if(queue.size() >= MAX_QUEUE_SIZE) {return count;}
@@ -168,6 +156,17 @@ public class TrackScheduler extends AudioEventAdapter {
 		isLooping = false;
 		oldTrack = null;
 		wasPaused = false;
+	}
+
+	private void handleTrackError(@NotNull AudioTrack track, String messageFormat, Object... args) {
+		String trackTitle = Utils.truncate(track.getInfo().title, 180);
+		getLogger().error(messageFormat, trackTitle, args);
+
+		Optional.ofNullable(jda().getGuildById(guildId))
+			.map(Channels.MUSIC::getAsChannel)
+			.ifPresent(channel -> new ReplyOperation((GuildMessageChannel) channel)
+			.sendFailed(String.format(messageFormat, trackTitle))
+		);
 	}
 
 	private void copyAndSaveTrack(@NotNull AudioTrack track, String adder, ReplyOperation o) {
