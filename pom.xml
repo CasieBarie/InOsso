@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.casiebarie</groupId>
     <artifactId>InOsso</artifactId>
-    <version>1.5.4-INDEV</version>
+    <version>1.5.4</version>
     <packaging>jar</packaging>
 
     <properties>
