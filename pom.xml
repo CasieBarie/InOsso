@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.casiebarie</groupId>
     <artifactId>InOsso</artifactId>
-    <version>1.5.4</version>
+    <version>1.5.5-INDEV</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -13,7 +13,7 @@
         <outputFilePath>${project.build.directory}/inosso-bot.jar</outputFilePath>
 
         <version.jda>5.6.1</version.jda>
-        <version.lavaplayer>2.2.3</version.lavaplayer>
+        <version.lavaplayer>2.2.4</version.lavaplayer>
         <version.udpqueue>0.2.9</version.udpqueue>
         <version.logback>1.5.18</version.logback>
         <version.slf4j>2.0.17</version.slf4j>
