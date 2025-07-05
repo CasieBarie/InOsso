@@ -23,6 +23,7 @@ public class Logger {
 
 	private void setFilters() {
 		List<String> filters = new ArrayList<>(List.of(
+			"net.dv8tion.jda.api.requests.RestRateLimiter",
 			"com.sedmelluq.lava.common.natives", "com.sedmelluq.lava.common.tools",
 			"com.sedmelluq.discord.lavaplayer",
 			"dev.lavalink.soundcloud", "dev.lavalink.bandcamp", "dev.lavalink.http",
