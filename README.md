@@ -6,6 +6,11 @@ Created for friends, InOsso aims to enhance your server's entertainment experien
 [More info](https://www.casiebarie.dev/discord/inosso/)
 
 ## Changelog:
+### v.1.5.5 - Dependency updates
+- **Fix** | Filter `RestRateLimiter` from the logger.
+- **Dependency** | Updated `dev.arbjerg_lavaplayer` from `2.2.3` to `2.2.4`.
+- **Other** | Code optimazations.
+
 ### v1.5.4 - Dependency updates & Bugfixes
 - **Fix** | MessageDeleter not working for webhook messages.
 - **Dependency** | Updated `net.dv8tion_jda` from `5.5.1` to `5.6.1`.
