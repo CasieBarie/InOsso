@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static dev.casiebarie.inosso.Main.jda;
@@ -22,7 +22,7 @@ import static dev.casiebarie.inosso.Main.safeRunnable;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
 public class WebhookManager extends ListenerAdapter {
-	static Map<String, Webhook> webhooks = new HashMap<>();
+	static Map<String, Webhook> webhooks = new ConcurrentHashMap<>();
 	boolean isStarted = false;
 	static boolean isInitialized = false;
 	static void setIsInitialized() {WebhookManager.isInitialized = true;}
@@ -44,10 +44,9 @@ public class WebhookManager extends ListenerAdapter {
 	}
 
 	public static @Nullable Webhook getWebhook(@NotNull IWebhookContainer channel, String name) {
-		String id = channel.getId() + "|InOsso-" + name;
+		String id = String.format("%s|InOsso-%s", channel.getId(), name);
 		if(!isInitialized) {return null;}
-		if(webhooks.containsKey(id)) {return webhooks.get(id);
-		} else {return createWebhook(channel, name);}
+		return webhooks.computeIfAbsent(id, k -> createWebhook(channel, name));
 	}
 
 	private static @Nullable Webhook createWebhook(IWebhookContainer channel, String name) {

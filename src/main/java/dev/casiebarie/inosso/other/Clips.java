@@ -54,15 +54,12 @@ public class Clips extends ListenerAdapter implements Information {
 	@Override
 	public void sendInformation(@NotNull ReplyOperation o) {
 		Guild guild = o.e.getGuild();
-		Member cas = Utils.getCasAsMember(guild);
-
 		EmbedBuilder eb = new EmbedBuilder()
 			.setColor(Color.BLACK)
 			.setImage(EMPTY_IMAGE)
 			.setDescription("# :video_camera: Climpies Help :video_camera:\n" +
 				"Het " + Channels.CLIPS.getAsMention(guild) + " kanaal is alleen voor clipjes. Alle berichten die geen video-link of bestand bevatten, worden automatisch verwijderd. Deze controle duurt ongeveer `1` seconde.")
-			.setFooter("Vraag aan " + cas.getEffectiveName() + " voor eventuele versoepelingen.");
-
+			.setFooter("Vraag aan " + Utils.getCasAsMember(guild).getEffectiveName() + " voor eventuele versoepelingen.");
 		o.e.getHook().sendMessageEmbeds(eb.build()).setFiles(Utils.loadImage(EMPTY_IMAGE_PATH)).queue(null, o::sendFailed);
 	}
 }

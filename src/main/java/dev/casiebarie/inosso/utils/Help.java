@@ -40,8 +40,7 @@ public class Help implements CommandListener, Information {
 		Collection<Command.Choice> choices = new LinkedList<>();
 		informations.keySet().forEach(key -> choices.add(new Command.Choice(key, key)));
 		return Commands.slash("help", String.format("%s | Ontvang hulp of informatie over een functie.", Emoji.fromFormatted("🆘"))).addOptions(
-			new OptionData(OptionType.STRING, "onderwerp", "Het onderwerp", true)
-				.addChoices(choices)
+			new OptionData(OptionType.STRING, "onderwerp", "Het onderwerp", true).addChoices(choices)
 		);
 	}
 

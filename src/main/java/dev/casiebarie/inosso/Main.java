@@ -37,7 +37,7 @@ public class Main extends ListenerAdapter {
 	}
 
 	@Override
-	public void onStatusChange(@NotNull StatusChangeEvent e) {if(e.getNewStatus() == JDA.Status.CONNECTED) {setJDA(e.getJDA());}}
+	public void onStatusChange(@NotNull StatusChangeEvent e) {if(e.getNewStatus() == JDA.Status.CONNECTED) {Main.jda = e.getJDA();}}
 
 	private @NotNull String getToken() {
 		String token = System.getenv("DISCORD_TOKEN");
@@ -64,14 +64,14 @@ public class Main extends ListenerAdapter {
 
 	// --- STATIC METHODS ---
 	public static final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), task -> {
-		Thread thread = new Thread(task, "InOsso MainPool");
+		Thread thread = new Thread(task, "InOsso MainPool " + Thread.currentThread().getId());
 		thread.setDaemon(true);
 		thread.setUncaughtExceptionHandler((t, ex) -> getLogger().error(ex.getMessage(), ex));
 		return thread;
 	});
 
 	public static final ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), task -> {
-		Thread thread = new Thread(task, "InOsso ScheduledPool");
+		Thread thread = new Thread(task, "InOsso ScheduledPool " + Thread.currentThread().getId());
 		thread.setDaemon(true);
 		thread.setUncaughtExceptionHandler((t, ex) -> getLogger().error(ex.getMessage(), ex));
 		return thread;
@@ -86,5 +86,4 @@ public class Main extends ListenerAdapter {
 	}
 
 	public static JDA jda() {return jda;}
-	private static void setJDA(JDA jda) {Main.jda = jda;}
 }

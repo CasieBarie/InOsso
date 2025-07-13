@@ -11,16 +11,16 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InstanceManager {
 	final Main main;
-	final Map<Class<?>, Object> services = new HashMap<>();
+	final Map<Class<?>, Object> services = new ConcurrentHashMap<>();
 	final List<Object> eventListeners = new ArrayList<>();
-	final Map<CommandListener, Boolean> commandListeners = new HashMap<>();
-	final Map<String, Information> informationClasses = new HashMap<>();
+	final Map<CommandListener, Boolean> commandListeners = new ConcurrentHashMap<>();
+	final Map<String, Information> informationClasses = new ConcurrentHashMap<>();
 	final List<ScheduledTask> scheduledTasks = new ArrayList<>();
 	public void registerAsEventListener(ListenerAdapter listener) {eventListeners.add(listener);}
 	public void registerAsCommandListener(CommandListener listener, boolean ephemeral) {commandListeners.put(listener, ephemeral);}

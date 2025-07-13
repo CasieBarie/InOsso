@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -26,25 +27,24 @@ import java.util.concurrent.TimeUnit;
 import static dev.casiebarie.inosso.Main.jda;
 import static dev.casiebarie.inosso.utils.logging.Logger.getLogger;
 
-public class Utils {
-	static final Random random = new Random();
-	public static boolean isGuest(Member member, boolean isAllowed) {
-		if(isAllowed) {return (member.getRoles().contains(Roles.GUEST_ALLOWED.getGuildRole(member.getGuild())));
-		} else {return (member.getRoles().contains(Roles.GUEST_RESTRICTED.getGuildRole(member.getGuild())));}
+public final class Utils {
+	private static final Random RANDOM = new Random();
+	public static boolean isGuest(@NotNull Member member, boolean isAllowed) {
+		Roles role = isAllowed ? Roles.GUEST_ALLOWED : Roles.GUEST_RESTRICTED;
+		return member.getRoles().contains(role.getGuildRole(member.getGuild()));
 	}
 
-	public static boolean isSpecial(Member member) {return !isGuest(member, false) && !isGuest(member, true);}
+	public static boolean isSpecial(@NotNull Member member) {return !isGuest(member, false) && !isGuest(member, true);}
 
-	public static @NotNull String getAsMention(Member member) {
-		if(isSpecial(member)) {return member.getRoles().get(0).getAsMention();
-		} else {return member.getAsMention();}
-	}
+	public static @NotNull String getAsMention(@NotNull Member member) {return isSpecial(member) ? member.getRoles().get(0).getAsMention() : member.getAsMention();}
 
-	public static boolean isInVoice(@NotNull Member member, ReplyOperation o) {
-		AudioChannel audioChannel = member.getVoiceState().getChannel();
+	public static boolean isInVoice(@NotNull Member member, @NotNull ReplyOperation operation) {
+		Optional<AudioChannel> audioChannel = Optional.ofNullable(member.getVoiceState().getChannel());
 		VoiceChannel voice = Channels.VOICE.getAsChannel(member.getGuild());
-		if(audioChannel == null || !audioChannel.getId().equals(voice.getId())) {o.sendNotAllowed("Je zit niet in " + voice.getAsMention() + "!"); return false;}
-		return true;
+		if(audioChannel.isEmpty() || !audioChannel.get().getId().equals(voice.getId())) {
+			operation.sendNotAllowed("Je zit niet in " + voice.getAsMention() + "!");
+			return false;
+		} return true;
 	}
 
 	public static User getCasAltAsUser() {return jda().getUserById(967727194967257208L);}
@@ -52,7 +52,6 @@ public class Utils {
 	public static Member getCasAsMember(@NotNull Guild guild) {return guild.getMember(getCasAsUser());}
 
 	public static @NotNull FileUpload loadImage(String filename) {return FileUpload.fromData(Utils.class.getClassLoader().getResourceAsStream("images/" + filename), filename);}
-
 	public static @NotNull FileUpload loadAvatar(String avatarUrl) {return loadAvatar(avatarUrl, null);}
 	public static @NotNull FileUpload loadAvatar(String avatarUrl, Integer number) {
 		String numberString = number != null ? number + "" : "";
@@ -81,12 +80,10 @@ public class Utils {
 		return escapeMarkdown((hours > 0) ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds));
 	}
 
-	public static @NotNull String truncate(String text, int maxLength) {
-		if(text == null) {return "";}
+	public static @NotNull String truncate(@NotNull String text, int maxLength) {
 		text = text.replace("\r\n", "\n");
 		if(text.codePointCount(0, text.length()) <= maxLength) {return text;}
-		int endIndex = text.offsetByCodePoints(0, maxLength - 1);
-		return escapeMarkdown(text.substring(0, endIndex) + "…");
+		return escapeMarkdown(text.substring(0, text.offsetByCodePoints(0, maxLength - 1)) + "…");
 	}
 
 	public static AudioTypes getAudioType(@NotNull Message message) {
@@ -94,15 +91,15 @@ public class Utils {
 		Set<String> domains = Set.of("soundcloud.com", "m.soundcloud.com", "on.soundcloud.com", "snd.sc", "bandcamp.com", "vimeo.com", "twitch.tv", "m.twitch.tv", "clips.twitch.tv");
 
 		if(!message.getAttachments().isEmpty()) {
-			Message.Attachment attachment = message.getAttachments().get(0);
-			return extensions.contains(attachment.getFileExtension().replace(".", "").toLowerCase()) ? AudioTypes.FILE : AudioTypes.UNSUPPORTED_FILE;
+			String extension = message.getAttachments().get(0).getFileExtension().replace(".", "").toLowerCase();
+			return extensions.contains(extension) ? AudioTypes.FILE : AudioTypes.UNSUPPORTED_FILE;
 		}
 
 		try {
-			URL link = new URL(message.getContentRaw());
-			String host = link.getHost().toLowerCase();
+			URL url = new URL(message.getContentRaw());
+			String host = url.getHost().toLowerCase();
 			if(domains.stream().anyMatch(domain -> host.equals(domain) || host.endsWith("." + domain))) {return AudioTypes.LINK;}
-			String path = link.getPath().toLowerCase();
+			String path = url.getPath().toLowerCase();
 			int dotIndex = path.lastIndexOf('.');
 			return dotIndex == -1 || !extensions.contains(path.substring(dotIndex + 1)) ? AudioTypes.UNSUPPORTED_LINK : AudioTypes.LINK;
 		} catch(MalformedURLException ex) {return AudioTypes.SEARCH;}
@@ -111,9 +108,9 @@ public class Utils {
 	public static boolean isSoundCloudGoPlus(@NotNull AudioTrack track) {return track.getInfo().identifier.endsWith("/preview/hls");}
 
 	public static @NotNull Properties getProperties() {
-		Properties properties  = new Properties();
+		Properties properties = new Properties();
 		try {properties.load(Utils.class.getClassLoader().getResourceAsStream("pom.properties"));
-		} catch (IOException e) {getLogger().error(e.getMessage(), e);}
+		} catch(IOException ex) {getLogger().error(ex.getMessage(), ex);}
 		return properties;
 	}
 
@@ -124,17 +121,14 @@ public class Utils {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime) % 60;
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime) % 60;
 		return String.format("%d %s, %d %s, %d %s en %d %s",
-			days, (days == 1) ? "dag" : "dagen",
-			hours, (hours == 1) ? "uur" : "uren",
-			minutes, (minutes == 1) ? "minuut" : "minuten",
-			seconds, (seconds == 1) ? "seconde" : "seconden"
+			days, days == 1 ? "dag" : "dagen",
+			hours, hours == 1 ? "uur" : "uren",
+			minutes, minutes == 1 ? "minuut" : "minuten",
+			seconds, seconds == 1 ? "seconde" : "seconden"
 		);
 	}
 
-	public static long jitter(long around) {
-		long jitter = random.nextInt(51);
-		return around + jitter;
-	}
+	public static long jitter(long around) {return around + RANDOM.nextInt(51);}
 
 	public static @NotNull String escapeMarkdown(@NotNull String input) {
 		return input.replace("*", "\\*")
