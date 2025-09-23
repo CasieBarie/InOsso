@@ -1,12 +1,15 @@
-# InOsso 🏠
+# 🏠 InOsso 🏠
 InOsso is a feature-rich Discord music bot designed to bring high-quality music playback and a variety of music-related functionalities to your Discord server.
 
 Created for friends, InOsso aims to enhance your server's entertainment experience with seamless music streaming, playlist management, and user-friendly commands. Designed with simplicity in mind, InOsso ensures that users of all experience levels can enjoy its features.
 
-[More info](https://www.casiebarie.dev/discord/inosso/)
+> [!NOTE]
+> This bot is created for friends in a private discord server. There is no public preview of the bot available.
 
+[More info](https://www.casiebarie.dev/discord/inosso/)
+<br><br><br>
 ## Changelog:
-### v.1.5.5 - Dependency updates
+### v1.5.5 - Dependency updates
 - **Fix** | Filter `RestRateLimiter` from the logger.
 - **Dependency** | Updated `dev.arbjerg_lavaplayer` from `2.2.3` to `2.2.4`.
 - **Other** | Code optimazations.
