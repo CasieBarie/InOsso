@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <outputFilePath>${project.build.directory}/inosso-bot.jar</outputFilePath>
 
-        <version.jda>5.6.1</version.jda>
+        <version.jda>6.0.0-rc.5</version.jda>
         <version.lavaplayer>2.2.4</version.lavaplayer>
         <version.udpqueue>0.2.9</version.udpqueue>
         <version.logback>1.5.18</version.logback>
