@@ -8,6 +8,9 @@ import dev.casiebarie.inosso.utils.ReplyOperation;
 import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -17,8 +20,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.*;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -69,7 +70,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
-		if(!e.getButton().getId().equals("send_embed")) {return;}
+		if(!e.getButton().getCustomId().equals("send_embed")) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
 		ReplyOperation o = new ReplyOperation(e);
 
@@ -116,7 +117,7 @@ public class SendEmbed extends ListenerAdapter implements CommandListener, Infor
 			embeds.add(embed);
 		}
 
-		try {o.e.getHook().sendMessage(content).setEmbeds(embeds).setActionRow(Button.of(ButtonStyle.SUCCESS, "send_embed", "Verstuur", Emoji.fromFormatted("🛰️"))).queue(null, o::sendFailed);
+		try {o.e.getHook().sendMessage(content).setEmbeds(embeds).setComponents(ActionRow.of(Button.of(ButtonStyle.SUCCESS, "send_embed", "Verstuur", Emoji.fromFormatted("🛰️")))).queue(null, o::sendFailed);
 		} catch(IllegalArgumentException ex) {
 			o.sendFailed("Dit bericht kan niet verstuurd worden!");
 			getLogger().debug(ex.getMessage(), ex);

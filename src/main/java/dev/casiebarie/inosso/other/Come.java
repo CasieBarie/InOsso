@@ -11,6 +11,8 @@ import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.WebhookManager;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -23,7 +25,6 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,7 +70,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
-		String btnId = e.getButton().getId();
+		String btnId = e.getButton().getCustomId();
 		if(!btnId.startsWith("come_") || e.getUser().isBot()) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
 		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
@@ -131,7 +132,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 			webhook.sendMessage(builder.toString())
 				.setUsername(guild.getSelfMember().getEffectiveName() + " -  Komen📢")
 				.setEmbeds(getComeEmbed(guild))
-				.setActionRow(Button.success("come_yes", "Ja"), Button.secondary("come_maybe", "Misschien"), Button.danger("come_no", "Nee"))
+				.setComponents(ActionRow.of(Button.success("come_yes", "Ja"), Button.secondary("come_maybe", "Misschien"), Button.danger("come_no", "Nee")))
 				.setFiles(Utils.loadImage("goat.png"), Utils.loadImage(EMPTY_IMAGE_PATH))
 			.queue(msg -> {o.replyEmpty(); messageId = msg.getId();}, o::sendFailed);
 			Main.scheduledPool.schedule(this::deleteManager, cooldown - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
@@ -144,7 +145,7 @@ public class Come extends ListenerAdapter implements CommandListener, Informatio
 			Webhook webhook = WebhookManager.getWebhook(channel, WEBHOOK_ID);
 			if(webhook == null) {o.sendFailed("Ik kan op dit moment je reactie niet verwerken."); return;}
 
-			String btnId = e.getButton().getId();
+			String btnId = e.getButton().getCustomId();
 			int response = btnId.equals("come_yes") ? 1 : (btnId.equals("come_no") ? 2 : 0);
 			if(Utils.isSpecial(member)) {commingSpecial.put(member.getId(), response);}
 			if(Utils.isGuest(member, true)) {commingGuest.put(member.getId(), response);}

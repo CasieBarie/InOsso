@@ -11,13 +11,14 @@ import dev.casiebarie.inosso.utils.Utils;
 import dev.casiebarie.inosso.utils.WebhookManager;
 import dev.casiebarie.inosso.utils.logging.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;
@@ -104,9 +105,9 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 		webhook.sendMessageEmbeds(requestingEmbed(requester))
 			.setUsername(guild.getSelfMember().getEffectiveName() + " | Poortwachter🚪")
 			.setFiles(Utils.loadImage(EMPTY_IMAGE_PATH), Utils.loadAvatar(requester.getEffectiveAvatarUrl()))
-			.setActionRow(
+			.setComponents(ActionRow.of(
 				Button.success("request_approve-" + requester.getId(), "Ja"),
-				Button.danger("request_deny-" + requester.getId(), "Nee"))
+				Button.danger("request_deny-" + requester.getId(), "Nee")))
 		.queue(success -> o.sendSuccess("Succesfully send request!"), o::sendFailed);
 	}
 
@@ -177,7 +178,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 				if(webhook == null) {return;}
 
 				webhook.editMessageEmbedsById(messageId, requestEmbed(onlineMembers))
-					.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))
+					.setComponents(ActionRow.of(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty())))
 				.queue(null, new ErrorHandler()
 					.handle(ErrorResponse.UNKNOWN_MESSAGE, error -> notFound = true)
 					.andThen(ReplyOperation::error)
@@ -222,7 +223,7 @@ public class Request extends ListenerAdapter implements ScheduledTask, Informati
 			channel.getIterableHistory().takeAsync(10).thenApply(channel::purgeMessages).whenComplete((success, error) ->
 			webhook.sendMessageEmbeds(requestEmbed(onlineMembers))
 				.setUsername(webhookName)
-				.setActionRow(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty()))
+				.setComponents(ActionRow.of(Button.primary("request_ask-ask", String.format("%s Please, let me pass!", Emoji.fromFormatted("🙏"))).withDisabled(onlineMembers.isEmpty())))
 				.setFiles(Utils.loadImage("notpass.png"))
 			.queue(msg -> {
 				messageId = msg.getId();

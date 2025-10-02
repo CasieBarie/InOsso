@@ -57,7 +57,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
-		if(!e.getButton().getId().startsWith("music_") || e.getUser().isBot()) {return;}
+		if(!e.getButton().getCustomId().startsWith("music_") || e.getUser().isBot()) {return;}
 		Guild guild = e.getGuild();
 		ReplyOperation o = new ReplyOperation(e);
 		GuildMusicManager manager = PlayerManager.getInstance(music).getGuildMusicManager(guild);
@@ -66,7 +66,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 
 		Main.pool.execute(() -> {
 			if(!Utils.isInVoice(e.getMember(), o)) {return;}
-			switch(e.getButton().getId().split("_")[1]) {
+			switch(e.getButton().getCustomId().split("_")[1]) {
 			case "pause" -> pause(manager, o);
 			case "skip" -> skip(manager, o);
 			case "replay" -> replay(manager, o);
@@ -92,7 +92,7 @@ public class Listeners extends ListenerAdapter implements ScheduledTask {
 
 	@Override
 	public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent e) {
-		if(!e.getSelectMenu().getId().startsWith("searchmusic_")) {return;}
+		if(!e.getSelectMenu().getCustomId().startsWith("searchmusic_")) {return;}
 		new ReplyOperation(e).replyEmpty();
 	}
 
