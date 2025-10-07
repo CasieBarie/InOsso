@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.version.outputs.changed }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -20,6 +22,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+
+      - name: Detect version change
+        if: ${{ inputs.deploy == true }}
+        id: version
+        run: |
+          CURRENT_VERSION=$(grep -m1 '<version>' pom.xml | sed -E 's/.*<version>(.*)<\/version>.*/\1/')
+          PREVIOUS_VERSION=$(git show HEAD~1:pom.xml 2>/dev/null | grep -m1 '<version>' | sed -E 's/.*<version>(.*)<\/version>.*/\1/' || echo "none")
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "previous=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Compile
         id: compile
@@ -76,7 +92,6 @@ jobs:
       - name: Build Summary
         run: |
           echo "📦 Build Summary"
-
           echo "### Maven Build"
           [[ "$compile_status" == "success" ]] && echo "- ✅ Compilation: Success" || echo "- ❌ Compilation: Failed"
           [[ "$package_status" == "success" ]] && echo "- ✅ Package: Success" || echo "- ❌ Package: Failed"
@@ -91,6 +106,13 @@ jobs:
             echo "### Docker"
             [[ "$docker_build_status" == "success" ]] && echo "- ✅ Docker Build: Success" || echo "- ❌ Docker Build: Failed"
             [[ "$docker_push_status" == "success" ]] && echo "- ✅ Docker Push: Success" || echo "- ❌ Docker Push: Failed"
+
+            echo "### Version Check"
+            if [[ "${{ steps.version.outputs.changed }}" == "true" ]]; then
+              echo "- ✅ Version changed: ${{ steps.version.outputs.previous }} → ${{ steps.version.outputs.current }}"
+            else
+              echo "- ❌ No version change detected (still ${{ steps.version.outputs.current }})"
+            fi
           fi
 
           echo "<details>"
