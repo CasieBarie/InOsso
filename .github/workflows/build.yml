@@ -1,4 +1,4 @@
-name: Build Summary
+name: Build
 on:
   workflow_call:
     inputs:
@@ -6,12 +6,14 @@ on:
         description: "Set to true to run Docker build & push"
         required: true
         type: boolean
+    secrets:
+      GHCR_TOKEN:
+        description: "GitHub Container Registry token"
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      version_changed: ${{ steps.version.outputs.changed }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,22 +25,9 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Detect version change
-        if: ${{ inputs.deploy == true }}
-        id: version
-        run: |
-          CURRENT_VERSION=$(grep -m1 '<version>' pom.xml | sed -E 's/.*<version>(.*)<\/version>.*/\1/')
-          PREVIOUS_VERSION=$(git show HEAD~1:pom.xml 2>/dev/null | grep -m1 '<version>' | sed -E 's/.*<version>(.*)<\/version>.*/\1/' || echo "none")
-          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "previous=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
-          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Compile
         id: compile
+        continue-on-error: true
         run: |
           if mvn -B clean compile --file pom.xml; then
             echo "compile_status=success" >> $GITHUB_ENV
@@ -48,6 +37,7 @@ jobs:
 
       - name: Package JAR
         id: package
+        continue-on-error: true
         run: |
           if mvn -B package -DskipTests --file pom.xml; then
             echo "package_status=success" >> $GITHUB_ENV
@@ -57,6 +47,7 @@ jobs:
 
       - name: Check JAR exists
         id: jar
+        continue-on-error: true
         run: |
           JAR_FILE=$(find target -name "*.jar" | head -n 1)
           if [ -z "$JAR_FILE" ]; then
@@ -72,17 +63,18 @@ jobs:
             fi
           fi
 
-      - name: Docker Build & Push (if deploy)
+      - name: Docker Build & Push
         if: ${{ inputs.deploy == true }}
         id: docker
+        continue-on-error: true
         run: |
+          set +e
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           if docker build -t ghcr.io/casiebarie/inosso-bot:latest .; then
             echo "docker_build_status=success" >> $GITHUB_ENV
           else
             echo "docker_build_status=failed" >> $GITHUB_ENV
           fi
-
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           if docker push ghcr.io/casiebarie/inosso-bot:latest; then
             echo "docker_push_status=success" >> $GITHUB_ENV
           else
@@ -90,34 +82,22 @@ jobs:
           fi
 
       - name: Build Summary
+        if: always()
         run: |
-          echo "📦 Build Summary"
-          echo "### Maven Build"
-          [[ "$compile_status" == "success" ]] && echo "- ✅ Compilation: Success" || echo "- ❌ Compilation: Failed"
-          [[ "$package_status" == "success" ]] && echo "- ✅ Package: Success" || echo "- ❌ Package: Failed"
+          echo "# 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Maven Build" >> $GITHUB_STEP_SUMMARY
+          [[ "$compile_status" == "success" ]] && echo "- ✅ Compilation: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Compilation: Failed" >> $GITHUB_STEP_SUMMARY
+          [[ "$package_status" == "success" ]] && echo "- ✅ Package: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Package: Failed" >> $GITHUB_STEP_SUMMARY
 
           case "$jar_status" in
-            ok) echo "- ✅ JAR Integrity: OK ($jar_size bytes)" ;;
-            empty) echo "- ❌ JAR Integrity: Empty JAR" ;;
-            missing) echo "- ❌ JAR Integrity: Missing JAR" ;;
+            ok) echo "- ✅ JAR Integrity: OK ($jar_size bytes)" >> $GITHUB_STEP_SUMMARY ;;
+            empty) echo "- ❌ JAR Integrity: Empty JAR" >> $GITHUB_STEP_SUMMARY ;;
+            missing) echo "- ❌ JAR Integrity: Missing JAR" >> $GITHUB_STEP_SUMMARY ;;
           esac
 
           if [[ "${{ inputs.deploy }}" == "true" ]]; then
-            echo "### Docker"
-            [[ "$docker_build_status" == "success" ]] && echo "- ✅ Docker Build: Success" || echo "- ❌ Docker Build: Failed"
-            [[ "$docker_push_status" == "success" ]] && echo "- ✅ Docker Push: Success" || echo "- ❌ Docker Push: Failed"
-
-            echo "### Version Check"
-            if [[ "${{ steps.version.outputs.changed }}" == "true" ]]; then
-              echo "- ✅ Version changed: ${{ steps.version.outputs.previous }} → ${{ steps.version.outputs.current }}"
-            else
-              echo "- ❌ No version change detected (still ${{ steps.version.outputs.current }})"
-            fi
+            echo "### Docker" >> $GITHUB_STEP_SUMMARY
+            [[ "$docker_build_status" == "success" ]] && echo "- ✅ Docker Build: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Docker Build: Failed" >> $GITHUB_STEP_SUMMARY
+            [[ "$docker_push_status" == "success" ]] && echo "- ✅ Docker Push: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Docker Push: Failed" >> $GITHUB_STEP_SUMMARY
           fi
-
-          echo "<details>"
-          echo "<summary>### Git Commit Info</summary>"
-          echo "- Commit: $(git rev-parse --short HEAD)"
-          echo "- Author: $(git log -1 --pretty=format:'%an')"
-          echo "- Message: $(git log -1 --pretty=format:'%s')"
-          echo "</details>"

@@ -1,9 +1,14 @@
-name: Pull Request Validation
+name: Validation
 on:
   pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
-  pr-build:
+  build:
     uses: ./.github/workflows/build.yml
     with:
       deploy: false
+    secrets:
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
