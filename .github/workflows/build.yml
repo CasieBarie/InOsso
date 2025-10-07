@@ -1,0 +1,101 @@
+name: Build Summary
+on:
+  workflow_call:
+    inputs:
+      deploy:
+        description: "Set to true to run Docker build & push"
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Compile
+        id: compile
+        run: |
+          if mvn -B clean compile --file pom.xml; then
+            echo "compile_status=success" >> $GITHUB_ENV
+          else
+            echo "compile_status=failed" >> $GITHUB_ENV
+          fi
+
+      - name: Package JAR
+        id: package
+        run: |
+          if mvn -B package -DskipTests --file pom.xml; then
+            echo "package_status=success" >> $GITHUB_ENV
+          else
+            echo "package_status=failed" >> $GITHUB_ENV
+          fi
+
+      - name: Check JAR exists
+        id: jar
+        run: |
+          JAR_FILE=$(find target -name "*.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "jar_status=missing" >> $GITHUB_ENV
+          else
+            FILESIZE=$(stat -c%s "$JAR_FILE")
+            if [ "$FILESIZE" -le 0 ]; then
+              echo "jar_status=empty" >> $GITHUB_ENV
+            else
+              echo "jar_status=ok" >> $GITHUB_ENV
+              echo "jar_file=$JAR_FILE" >> $GITHUB_ENV
+              echo "jar_size=$FILESIZE" >> $GITHUB_ENV
+            fi
+          fi
+
+      - name: Docker Build & Push (if deploy)
+        if: ${{ inputs.deploy == true }}
+        id: docker
+        run: |
+          if docker build -t ghcr.io/casiebarie/inosso-bot:latest .; then
+            echo "docker_build_status=success" >> $GITHUB_ENV
+          else
+            echo "docker_build_status=failed" >> $GITHUB_ENV
+          fi
+
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          if docker push ghcr.io/casiebarie/inosso-bot:latest; then
+            echo "docker_push_status=success" >> $GITHUB_ENV
+          else
+            echo "docker_push_status=failed" >> $GITHUB_ENV
+          fi
+
+      - name: Build Summary
+        run: |
+          echo "📦 Build Summary"
+
+          echo "### Maven Build"
+          [[ "$compile_status" == "success" ]] && echo "- ✅ Compilation: Success" || echo "- ❌ Compilation: Failed"
+          [[ "$package_status" == "success" ]] && echo "- ✅ Package: Success" || echo "- ❌ Package: Failed"
+
+          case "$jar_status" in
+            ok) echo "- ✅ JAR Integrity: OK ($jar_size bytes)" ;;
+            empty) echo "- ❌ JAR Integrity: Empty JAR" ;;
+            missing) echo "- ❌ JAR Integrity: Missing JAR" ;;
+          esac
+
+          if [[ "${{ inputs.deploy }}" == "true" ]]; then
+            echo "### Docker"
+            [[ "$docker_build_status" == "success" ]] && echo "- ✅ Docker Build: Success" || echo "- ❌ Docker Build: Failed"
+            [[ "$docker_push_status" == "success" ]] && echo "- ✅ Docker Push: Success" || echo "- ❌ Docker Push: Failed"
+          fi
+
+          echo "<details>"
+          echo "<summary>### Git Commit Info</summary>"
+          echo "- Commit: $(git rev-parse --short HEAD)"
+          echo "- Author: $(git log -1 --pretty=format:'%an')"
+          echo "- Message: $(git log -1 --pretty=format:'%s')"
+          echo "</details>"
