@@ -23,5 +23,5 @@ body:
       label: "Feature Request"
       description: "Provide a small description of the feature you want to have added."
       placeholder: "InOsso should get ..."
-      validations:
-        required: true
+    validations‎:
+      required: true
