@@ -74,7 +74,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
-		String id = e.getButton().getId();
+		String id = e.getButton().getCustomId();
 		if(!id.startsWith("jachtseizoen-")) {return;}
 		e.deferReply(true).queue(null, ReplyOperation::error);
 		getLogger().debug("ButtonInteraction with ID {} by {}", e.getComponentId(), Logger.getUserNameAndId(e.getUser()));
@@ -115,7 +115,7 @@ public class Jachtseizoen extends ListenerAdapter implements CommandListener, Sc
 		if(manager == null) {o.sendNotAllowed("Er is geen jachtseizoen actief!"); return;}
 		if(!Utils.isInVoice(e.getMember(), o)) {return;}
 
-		String action = e.getButton().getId().split("-")[1];
+		String action = e.getButton().getCustomId().split("-")[1];
 		switch(action) {
 		case "start" -> {manager.onStartButton(o); iManager.get(Music.class).playJachtseizoen(e.getGuild());}
 		case "reroll" -> manager.onRerollButton(o);
