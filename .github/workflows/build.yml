@@ -1,4 +1,5 @@
 name: Build
+
 on:
   workflow_call:
     inputs:
@@ -84,10 +85,11 @@ jobs:
       - name: Build Summary
         if: always()
         run: |
+          EXIT_CODE=0
           echo "# 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
 
           echo "### Maven Build" >> $GITHUB_STEP_SUMMARY
-          [[ "$compile_status" == "success" ]] && echo "- ✅ Compilation: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Compilation: Failed" >> $GITHUB_STEP_SUMMARY
+          [[ "$compile_status" == "success" ]] && echo "- ✅ Compile: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Compile: Failed" >> $GITHUB_STEP_SUMMARY
           [[ "$package_status" == "success" ]] && echo "- ✅ Package: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Package: Failed" >> $GITHUB_STEP_SUMMARY
 
           case "$jar_status" in
@@ -96,8 +98,17 @@ jobs:
             missing) echo "- ❌ JAR Integrity: Missing JAR" >> $GITHUB_STEP_SUMMARY ;;
           esac
 
+          if [[ "$compile_status" != "success" || "$package_status" != "success" || "$jar_status" != "ok" ]]; then
+            EXIT_CODE=1
+          fi
+
           if [[ "${{ inputs.deploy }}" == "true" ]]; then
             echo "### Docker" >> $GITHUB_STEP_SUMMARY
             [[ "$docker_build_status" == "success" ]] && echo "- ✅ Docker Build: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Docker Build: Failed" >> $GITHUB_STEP_SUMMARY
             [[ "$docker_push_status" == "success" ]] && echo "- ✅ Docker Push: Success" >> $GITHUB_STEP_SUMMARY || echo "- ❌ Docker Push: Failed" >> $GITHUB_STEP_SUMMARY
+            if [[ "$docker_build_status" != "success" || "$docker_push_status" != "success" ]]; then
+              EXIT_CODE=1
+            fi 
           fi
+
+          exit $EXIT_CODE
