@@ -27,7 +27,7 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: "Code Example for Reproduction Steps"
+      label: "Reproduction Steps"
       description: |-
         Please add the steps you took to reproduce this problem.  
         Put "N/A" if you don't have a reproducible setup.
